@@ -1,0 +1,384 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/user.man.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Seguridad</li><li>Usuarios</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Seguridad
+                        <span>&gt;  
+                            #{managedUserBean.selected.id eq null ? 'Creando usuario' : 'Editando usuario'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:User.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:User.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">
+                    <article class="col-md-6 col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-white"></i> 
+                                </span>
+                                <h2>Informacion</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <h:form id="form">
+                                            <ui:fragment >
+                                                <p:remoteCommand name="updatePersonalDni" update=":form:dni-wrapper" oncomplete="$('#modal-person').modal('toggle');" action="#{managedUserBean.personSearcher.saveDni()}"/>
+                                                <p:remoteCommand name="updatePersonalData" onstart="begin_load()" oncomplete="end_load()" action="#{managedUserBean.personSearcher.saveData()}"/>
+
+                                                <p:remoteCommand 
+                                                    name="searchByDni"
+                                                    onstart="User.beginSearchByDni()"
+                                                    oncomplete="User.endSearchByDni()"
+                                                    action="#{managedUserBean.personSearcher.search()}"
+                                                    update="form:data,:form-rol"
+                                                    process="@this,dni"/>
+                                                
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">Dni</label>
+                                                    <h:panelGroup id="dni-wrapper" layout="block" styleClass="col-md-3"> 
+                                                        <ui:fragment rendered="#{managedUserBean.selected.id eq null}">
+                                                            <div class="input-icon-right">
+                                                                <i class="glyphicon glyphicon-refresh fa-spin hidden"></i>
+                                                                <h:inputText id="dni" onkeyup="if (event.keyCode == 13) {
+                                                                            User.searchByDni();
+                                                                        }"
+                                                                             value="#{managedUserBean.personSearcher.dni}" styleClass="form-control">
+                                                                    <f:passThroughAttribute name="placeholder" value="Ingrese dni" />
+                                                                    <f:passThroughAttribute name="autofocus" value="true" />
+
+                                                                </h:inputText>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{managedUserBean.selected.id ne null}">
+                                                            <script>
+                                                                $(User.configure_dni);
+                                                            </script>
+                                                            <p id="dni" style="cursor:pointer" class="form-control-static text-muted">#{managedUserBean.personSearcher.person.dni}</p>
+                                                            <h:inputHidden id="dni_edit" value="#{managedUserBean.personSearcher.person.dni}" />
+                                                        </ui:fragment>
+                                                    </h:panelGroup>
+                                                </div>
+
+                                                <h:panelGroup id="data" layout="block">
+                                                    <ui:fragment rendered="#{managedUserBean.personSearcher.person ne null}">
+                                                        <ui:fragment rendered="#{managedUserBean.personSearcher.person.id eq null}">
+                                                            <script>
+                                                                $(function () {
+                                                                    User.configureGenerate();
+                                                                    User.generate();
+                                                                })
+                                                            </script>
+                                                            <p:remoteCommand 
+                                                                name="generate"
+                                                                action="#{managedUserBean.generate()}"
+                                                                update="form:credentials-wrapper"
+                                                                process="@this,name2,pattern2"/>
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">Nombres</label>
+                                                                <div class="col-md-10">
+                                                                    <h:inputText id="name2" onkeyup="generate();" value="#{managedUserBean.personSearcher.person.name}" 
+                                                                                 styleClass="form-control">
+                                                                        <f:passThroughAttribute name="placeholder" value="Ingrese nombre" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">Apellidos</label>
+                                                                <div class="col-md-5">
+                                                                    <h:inputText id="pattern2" onkeyup="generate();" value="#{managedUserBean.personSearcher.person.pattern}" 
+                                                                                 styleClass="form-control">
+                                                                        <f:passThroughAttribute name="placeholder" value="Apellido paterno" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <h:inputText id="mattern2" value="#{managedUserBean.personSearcher.person.mattern}" styleClass="form-control">
+                                                                        <f:passThroughAttribute name="placeholder" value="Apellido materno" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">E-mail</label>
+                                                                <div class="col-md-10">
+                                                                    <h:inputText id="email2" value="#{managedUserBean.personSearcher.person.email}" styleClass="form-control">
+                                                                        <f:passThroughAttribute name="placeholder" value="Ingrese email" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment  rendered="#{managedUserBean.personSearcher.person.id ne null}">
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">Nombres</label>
+                                                                <div class="col-md-10">
+                                                                    <script>
+                                                                        $(User.configure_name);
+                                                                    </script>
+                                                                    <p style="cursor: pointer" id="name" class="form-control-static text-muted">#{managedUserBean.personSearcher.person.name}
+
+                                                                    </p>     
+                                                                    <h:inputHidden id="name" value="#{managedUserBean.personSearcher.person.name}" />
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">Apellidos</label>
+                                                                <div class="col-md-5">
+                                                                    <script>
+                                                                        $(User.configure_lastname);
+                                                                    </script>
+                                                                    <p style="cursor: pointer" id="pattern" class="form-control-static text-muted">#{managedUserBean.personSearcher.person.pattern}</p>
+                                                                    <h:inputHidden id="pattern" value="#{managedUserBean.personSearcher.person.pattern}" />
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <p style="cursor: pointer" id="mattern" class="form-control-static text-muted">#{managedUserBean.personSearcher.person.mattern}</p>
+                                                                    <h:inputHidden id="mattern" value="#{managedUserBean.personSearcher.person.mattern}" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-md-2 control-label">E-mail</label>
+                                                                <div class="col-md-10">
+                                                                    <script>
+                                                                        $(User.configure_email);
+                                                                    </script>
+                                                                    <p style="cursor: pointer" id="email" class="form-control-static text-muted">#{managedUserBean.personSearcher.person.email}</p>
+                                                                    <h:inputHidden id="email" value="#{managedUserBean.personSearcher.person.email}" />
+                                                                </div>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <div class="form-group">
+                                                            <label class="col-md-2 control-label">Dependencia</label>
+                                                            <div class="col-md-10"> 
+                                                                <script>
+                                                                    $(function () {
+                                                                        $("#form\\:dependency").select2({
+                                                                            width: "100%",
+                                                                            placeholder: "Seleccione una dependencia"
+                                                                        })
+                                                                    })
+                                                                </script>
+                                                                <h:selectOneMenu value="#{managedUserBean.dependencySearcher.selected}" id="dependency">
+                                                                    <f:selectItem/>
+                                                                    <f:selectItems 
+                                                                        value="#{managedUserBean.dependencySearcher.data}"
+                                                                        var="item" 
+                                                                        itemLabel="#{item[1]} || #{item[2]}" 
+                                                                        itemValue="#{item[0]}"/>
+                                                                </h:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-2 control-label">Cargo</label>
+                                                            <div class="col-md-10"> 
+                                                                <h:inputText id="charge" value="#{managedUserBean.involved.charge}" styleClass="form-control">
+                                                                    <f:passThroughAttribute name="placeholder" value="Ingrese cargo" />
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                        <h:panelGroup id="credentials-wrapper" layout="block" styleClass="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-md-4 control-label">Usuario</label>
+                                                                    <div class="col-md-3"> 
+                                                                        <p id="username" class="form-control-static text-muted">#{managedUserBean.nick}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    <label class="col-md-4 control-label">Clave</label>
+                                                                    <div class="col-md-3"> 
+                                                                        <p id="password" class="form-control-static text-muted">#{managedUserBean.password}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 col-md-offset-2">
+                                                                <label class="checkbox-inline">
+                                                                    <h:selectBooleanCheckbox value="#{managedUserBean.createAgain}" id="create-again" styleClass="checkbox" />
+                                                                    <span>Crear nuevo al terminar</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{managedUserBean.personSearcher.person eq null}">
+                                                        <h4 class="text-muted text-center" style="font-weight: bold">Ingrese primero el DNI</h4>
+                                                    </ui:fragment>
+                                                </h:panelGroup>
+                                            </ui:fragment>
+
+                                            <p:remoteCommand 
+                                                name="save" 
+                                                update=":main" 
+                                                process="@form" action="#{managedUserBean.doSave('/pages/security/user.xhtml', userBean)}" />
+                                            <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{userBean.onLoad(true)}">
+                                                <f:setPropertyActionListener value="/pages/security/user.xhtml" target="#{navigationBean.content}" />
+                                                <f:setPropertyActionListener value="#{userBean}" target="#{sessionBean.loadable}" />
+                                            </p:commandLink>
+                                        </h:form>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+                    <article class="col-md-6 col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-redLight" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-users txt-color-white"></i> 
+                                </span>
+                                <h2>Roles</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                            </header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <h:form id="form-rol">
+                                            <ui:fragment rendered="#{managedUserBean.selected.id ne null or managedUserBean.personSearcher.person ne null}">
+                                                <p:remoteCommand name="submitRols" process="@form" oncomplete="save()" />
+                                                <h:panelGroup id="table-wrapper" layout="block">
+                                                    <script>
+                                                        $(function () {
+                                                            $(".permission-ck").on("change", function () {
+                                                                if ($(this).is(":disabled")) {
+                                                                    return;
+                                                                }
+                                                                if (this.checked) {
+                                                                    $(this).closest("tr").addClass("highlight");
+                                                                } else {
+                                                                    $(this).closest("tr").removeClass("highlight");
+                                                                }
+                                                            }).trigger("change").closest("tr").on("click", function () {
+                                                                if ($(this).find(".permission-ck").is(":disabled")) {
+                                                                    return;
+                                                                }
+                                                                $(this).find(".permission-ck").trigger("click");
+                                                            });
+                                                        });
+                                                    </script>
+                                                    <table class="inbox-table table table-hover table-striped table-forum">
+                                                        <tbody>
+                                                            <ui:repeat value="#{managedUserBean.rolSearcher.data}" var="item" >
+
+                                                                <tr style="#{item.active ? '' : 'opacity : 0.5'}" class="#{item.active ? '' : 'danger'}">
+                                                                    <td class="text-center" style="width: 40px;"><i class="fa fa-user-md fa-2x text-muted"></i></td>
+                                                                    <td>
+                                                                        <h4>
+                                                                            <a href="javascript:void(0)">
+                                                                                #{item.name}
+                                                                            </a>
+                                                                            <small>#{item.code}</small>
+                                                                        </h4>
+                                                                    </td>
+                                                                    <td class="text-center" style="width: 40px;">
+                                                                        <label class="checkbox">
+                                                                            <h:selectBooleanCheckbox value="#{managedUserBean.rolSearcher.selecteds[item.id]}" disabled="#{not item.active}"  styleClass="checkbox permission-ck" />
+                                                                            <span>&nbsp;</span>
+                                                                        </label>
+                                                                    </td>
+
+                                                                </tr>
+                                                            </ui:repeat>
+                                                        </tbody>
+                                                        <ui:fragment rendered="#{empty managedUserBean.rolSearcher.data}">
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="3">
+                                                                        <h5 class="text-muted">No se ha encontrado roles</h5>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </ui:fragment>
+                                                    </table>
+                                                </h:panelGroup>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{managedUserBean.selected.id eq null and managedUserBean.personSearcher.person eq null}">
+                                                <h4 class="text-muted text-center" style="padding-top: 10px;font-weight: bold">
+                                                    <i class="fa fa-2x fa-users"/>
+                                                    <br/>Ingrese primero el DNI</h4>
+                                            </ui:fragment>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+</ui:composition>

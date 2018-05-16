@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/rol.reg.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="code" value="#{rolBean.code}" />
+        <h:inputHidden id="name" value="#{rolBean.name}" />
+        <p:remoteCommand name="search" action="#{rolBean.search()}" onstart="Rol.beginSearch()" oncomplete="Rol.endSearch()" update=":table-wrapper" />
+        <p:remoteCommand name="del" action="#{managedRolBean.delete(rolBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+        <p:remoteCommand name="recovery" action="#{managedRolBean.recovery(rolBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedRolBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedRolBean}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/managed/rol.xhtml" />
+        </p:commandLink>
+
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Home</li><li>Seguridad</li><li>Roles</li>
+        </ol>
+    </div>
+    <!-- END RIBBON -->
+
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <!-- row -->
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Seguridad
+                        <span>>  
+                            Roles
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:Rol.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar rol </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-darken"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+
+                            <!-- widget div-->
+                            <div>
+
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por codigo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="glyphicon glyphicon-user"></i>
+                                                            <input type="text" id="code" value="#{rolBean.code}" autofocus="true" class="form-control" placeholder="Ingrese el codigo"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por nombre</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="glyphicon glyphicon-user"></i>
+                                                            <input type="text" id="username" value="#{rolBean.name}" class="form-control" placeholder="Ingrese el nombre"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="Rol.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+
+                    <article class="col-sm-8">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Lista de Roles</h2>
+                                <div class="widget-toolbar">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-default btn-xs active">
+                                            <input type="radio" /> <i class="fa fa-list"></i>
+                                        </label>
+                                        <label class="btn btn-default btn-xs">
+                                            <input type="radio" /> <i class="fa fa-sitemap"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </header>
+
+                            <!-- widget div-->
+                            <div>
+
+                                <!-- widget edit box -->
+                                <div class="jarviswidget-editbox">
+                                    <!-- This area used as dropdown edit box -->
+
+                                </div>
+                                <!-- end widget edit box -->
+
+                                <!-- widget content -->
+                                <div class="widget-body no-padding">
+                                    <h:panelGroup id="table-wrapper" layout="block">
+                                        <script>
+                                            $(function () {
+                                                Rol.paginateResult();
+                                            });
+                                        </script>
+                                        <table id="result-table" class="table table-bordered table-striped table-condensed table-hover smart-form " width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-xs-3">Codigo</th>
+                                                    <th class="col-xs-3">Codigo</th>
+                                                    <th class="col-xs-9">Nombre </th>
+                                                    <th style="min-width: 70px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ui:repeat value="#{rolBean.data}" var="item" varStatus="status">
+                                                    <tr class="#{item[3] ? '' : 'danger'}">
+                                                        <td>#{item[3]}</td>
+                                                        <td>#{item[1]}</td>
+                                                        <td>#{item[2]}</td>
+                                                        <td class="text-center" style="vertical-align: middle !important">
+                                                            <h:form>
+                                                                <div class="btn-group">
+                                                                    <ui:fragment rendered="#{item[3]}">
+                                                                        <a onclick="$('#myModal').modal()" class="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></a>
+                                                                        <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                            <i class="fa fa-edit"></i>
+                                                                            <f:setPropertyActionListener target="#{managedRolBean.idSelected}" value="#{item[0]}" />
+                                                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedRolBean}" />
+                                                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/managed/rol.xhtml" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink process="@this" oncomplete="Rol.delete('#{item[2]}')" styleClass="btn btn-danger btn-xs">
+                                                                            <i class="fa fa-trash-o"></i>
+                                                                            <f:setPropertyActionListener target="#{rolBean.id}" value="#{item[0]}" />
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{not item[3]}">
+                                                                        <p:commandLink process="@this" oncomplete="Rol.recovery('#{item[2]}')"  styleClass="btn btn-success btn-xs">
+                                                                            Restaurar
+                                                                            <f:setPropertyActionListener target="#{rolBean.id}" value="#{item[0]}" />
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                            </h:form>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </tbody>
+                                        </table>
+                                        <input id="message-search" type="hidden" value=""  />
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+
+</ui:composition>

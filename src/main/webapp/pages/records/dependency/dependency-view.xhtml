@@ -1,0 +1,473 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/pages/records/dependency/js/dependency.view.js"/>
+    <script src="#{request.contextPath}/js/pages/report_view.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="path" value="#{dependencyBean.path}" />
+        <h:inputHidden id="name" value="#{dependencyBean.name}" />
+        <h:inputHidden id="operational" value="#{dependencyBean.operational}" />
+        <p:remoteCommand name="search" action="#{dependencyBean.search()}" onstart="Dependency.beginSearch()" oncomplete="Dependency.endSearch()" update=":table-wrapper" />
+        <p:remoteCommand name="beginImport" action="#{dependencyBean.import_.refresh()}" oncomplete="$('#modal-import').modal({backdrop:'static',keyboard:false})" update=":form-progress,:form-import" />
+        <p:remoteCommand name="del" action="#{managedDependencyBean.delete(dependencyBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+        <p:remoteCommand name="recovery" action="#{managedDependencyBean.recovery(dependencyBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+        <p:commandLink 
+            id="download-full-export" 
+            ajax="false" 
+            styleClass="hidden" 
+            action="#{dependencyBean.generateFullExport()}"
+            process="@this"/>
+
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedDependencyBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedDependencyBean}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/dependency/dependency-managed.xhtml" />
+        </p:commandLink>
+    </h:form>
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Dependencia</li>
+        </ol>
+    </div>
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4">
+                    <h1 class="page-title txt-color-blueDark">
+                        <i class="fa-fw fa fa-home"></i> 
+                        Registros
+                        <span>>  
+                            Dependencias
+                        </span>
+                    </h1>
+                </div>
+                <div class="
+                     col-xs-12 
+                     col-sm-7
+                     col-md-7
+                     col-lg-8
+                     text-align-right">
+                    <h:panelGroup layout="block" id="dependency-options" style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:beginImport()" class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> Importar datos</a>
+                        </div>
+                        <div jsf:rendered="#{dependencyCopyBean.allowCopy}" class="btn-group">
+                            <a href="javascript:DependencyCopy.begin()" class="btn btn-sm btn-warning"> <i class="fa fa-copy"></i> Copiar datos </a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:$('#form-search\\:download-full-export').trigger('click')" class="btn btn-sm btn-default"> <i class="fa fa-table"></i> Descargar datos </a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:Dependency.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar dependencia </a>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+            </div>
+
+            <section id="widget-grid" class="">
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-darken"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por codigo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="glyphicon glyphicon-barcode"></i>
+                                                            <input type="text" id="path" value="#{dependencyBean.path}" autofocus="true" class="form-control" placeholder="Ingrese el codigo"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por nombre</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="fa fa-tag"></i>
+                                                            <input type="text" id="name" value="#{dependencyBean.name}" class="form-control" placeholder="Ingrese el nombre"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por tipo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="icon-addon addon-md">
+                                                            <select id="operational" class="form-control">
+                                                                <option value="">Cualquier tipo</option>
+                                                                <option value="true">Solo operacionales</option>
+                                                                <option value="false">Solo genericos</option>
+                                                            </select>
+                                                            <label for="email" class="glyphicon glyphicon-bell" rel="tooltip" title="" data-original-title="email"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="Dependency.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="col-sm-8">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Lista de Dependencias</h2>
+                                <div class="widget-toolbar" id="switch-1" role="menu">
+                                    <button type="button" onclick="$('#modal-report').modal()" style="background: none;border: none"><i class="fa fa-file"></i></button>
+                                    <button type="button" onclick="$('#modal-download').modal()" style="background: none;border: none"><i class="fa fa-download"></i></button>
+                                </div>
+                            </header>
+                            <div>
+
+                                <div class="jarviswidget-editbox">
+                                </div>
+
+                                <div class="widget-body no-padding">
+                                    <h:panelGroup id="table-wrapper" layout="block">
+                                        <h:form id="form-table">
+                                            <div class="dataTables_wrapper form-inline no-footer">
+                                                <ui:include src="/layout/pagination_header.xhtml">
+                                                    <ui:param name="pagination" value="#{dependencyBean.pagination}"/>
+                                                    <ui:param name="order_factory" value="#{dependencyBean.orderFactory}"/>
+                                                    <ui:param name="update_script" value="search()"/>
+                                                </ui:include>
+                                                <table id="result-table" class="table table-bordered table-striped table-condensed table-hover" width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-xs-2">Codigo</th>
+                                                            <th class="col-xs-9">Nombre </th>
+                                                            <th class="col-xs-1">Tipo </th>
+                                                            <th style="min-width: 90px;max-width: 90px;"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{dependencyBean.pagination.data}" var="item" varStatus="status">
+                                                            <tr  class="#{item['active'] ? '' : 'danger'}">
+                                                                <td style="vertical-align: middle !important">#{item['path']}</td>
+                                                                <td>#{item['name'].toUpperCase()}</td>
+                                                                <td style="vertical-align: middle !important">
+                                                                    <ui:fragment rendered="#{item['operational']}">
+                                                                        <span class="label label-info">Operacional</span>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{not item['operational']}">
+                                                                        <span class="label label-warning">Genérico</span>
+                                                                    </ui:fragment>
+                                                                </td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <div class="btn-group">
+                                                                        <p:commandLink process="@this" update=":main" action="#{viewDependencyBean.begin(item['id'])}"  styleClass="btn btn-info btn-xs">
+                                                                            <i class="fa fa-info-circle"></i>
+                                                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{viewDependencyBean}" />
+                                                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/dependency/dependency-info.xhtml" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink  rendered="#{item['active']}" process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                            <i class="fa fa-edit"></i>
+                                                                            <f:setPropertyActionListener target="#{managedDependencyBean.idSelected}" value="#{item['id']}" />
+                                                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedDependencyBean}" />
+                                                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/dependency/dependency-managed.xhtml" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink rendered="#{item['active']}" onclick="$(this).blur()" process="@this" styleClass="btn btn-danger btn-xs" oncomplete="Dependency.delete('#{item['name']}')">
+                                                                            <i class="fa fa-trash-o"></i>
+                                                                            <f:setPropertyActionListener target="#{dependencyBean.id}" value="#{item['id']}" />
+                                                                        </p:commandLink>
+                                                                        
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                </table>
+                                                <ui:include src="/layout/pagination_footer.xhtml">
+                                                    <ui:param name="pagination" value="#{dependencyBean.pagination}"/>
+                                                </ui:include>
+
+                                            </div>
+                                        </h:form>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-download" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar dependencias</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form styleClass="form-horizontal">
+                        <p:commandLink ajax="false" process="@form" action="#{dependencyBean.export.toXlsx()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Excel
+                        </p:commandLink>
+                        <p:commandLink ajax="false" process="@form"  action="#{dependencyBean.export.toPdf()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            PDF
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{dependencyBean.export.toDocx()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Word
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{dependencyBean.export.toTxt()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-text-o text-muted"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Texto plano
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{dependencyBean.export.toSyBase()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-database text-warning"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            dBase
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{dependencyBean.export.toHtml()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            HTML
+                        </p:commandLink>
+                        <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label class="checkbox-inline">
+                                    <h:selectBooleanCheckbox value="#{dependencyBean.export.activeHeader}" styleClass="checkbox" />
+                                    <span>Incluir cabecera</span>
+                                </label>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="false">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <h:selectBooleanCheckbox value="#{dependencyBean.export.allowDropped}" styleClass="checkbox" />
+                                        <span>Excluir eliminados</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Reporte de dependencias</h4>
+                </div>
+                <h:form id="report-form" styleClass="form-horizontal">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Reporte</label>
+                                <div class="col-md-10">
+                                    <script>
+                                        $(function () {
+                                            $("#report-form\\:report").select2({
+                                                placeholder: "Seleccione un reporte",
+                                                width: "100%"
+                                            })
+                                        });
+                                    </script>
+                                    <h:selectOneMenu id="report" value="#{dependencyBean.webReportForm.selectedCode}">
+                                        <f:selectItem/>
+                                        <f:selectItems value="#{dependencyBean.webReportForm.staticReports}" var="r" itemValue="#{r.code}" itemLabel="#{r.name}"/>
+                                        <p:ajax process="report" event="change" update="report-form:parameters-wrapper"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                            <h:panelGroup layout="block" id="parameters-wrapper">
+                                <ui:fragment rendered="#{dependencyBean.webReportForm.selected ne null}">
+                                    <ui:repeat value="#{dependencyBean.webReportForm.selected.parameters}" var="parameter" >
+                                        <h:outputText value="#{parameter.makeHtml()}" escape="false"/>
+                                    </ui:repeat>
+                                </ui:fragment>
+                            </h:panelGroup>
+                            <a onclick="ReportView.report(this, 'XLSX', 'bg-color-green', 'txt-color-green')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                MS Excel
+                            </a>
+                            <a onclick="ReportView.report(this, 'PDF', 'bg-color-red', 'txt-color-red')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                PDF
+                            </a>
+                            <a  onclick="ReportView.report(this, 'DOCX', 'bg-color-blue', 'txt-color-blue')"  style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                MS Word
+                            </a>
+                            <a onclick="ReportView.report(this, 'HTML', 'bg-color-purple', 'txt-color-purple')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                HTML
+                            </a>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        </div>
+                        <h:inputHidden id="content-type" value="#{dependencyBean.webReportForm.contentType}" />>
+                        <h:inputHidden id="parameters" value="#{dependencyBean.webReportForm.parameters}" />
+                        <p:commandLink id="download-rp" ajax="false"  styleClass="hidden" action="#{dependencyBean.export()}" process="@form"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"  class="btn btn-primary" onclick="ReportView.download()" >
+                            Descargar
+                        </button>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" ><i class="fa fa-file-excel-o"></i> Importar desde Excel</h4>
+                </div>
+                <h:form id="form-import" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div id="import-file-wrapper" class="smart-form">
+                            <section>
+                                <label class="label">Importa desde</label>
+                                <div class="input input-file">
+                                    <span class="button">
+                                        <h:inputFile id="file" value="#{dependencyBean.import_.file}" onchange="document.getElementById('import-display-file').value = this.value" />Buscar
+                                    </span>
+                                    <input type="text" id="import-display-file" onclick="" placeholder="Seleccione un archivo" readonly=""/>
+                                </div>
+                            </section>
+                        </div>
+                        <h:panelGroup style="display: none" styleClass="animated fadeInDown" id="load-wrapper">
+                            <p>
+                                <span id="import-state">#{dependencyBean.import_.state.description}</span> <span class="txt-color-purple pull-right"><i class="fa fa-warning"></i><span id="import-percent">0</span>% Completado</span>
+                            </p>
+                            <div class="progress progress-sm progress-striped active">
+                                <div id="import-progress-bar" class="progress-bar bg-color-darken" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div id="import-data" style="max-height: 200px;overflow-y: auto;border: 4px dashed #EFEFEF">
+                                <table class="table table-condensed smart-form " width="100%">
+                                    <thead class="hidden">
+                                        <tr>
+                                            <th style="min-width: 30px"></th>
+                                            <th class="col-xs-3"></th>
+                                            <th class="col-xs-9"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </h:panelGroup>
+
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink id="button-submit" onclick="$('#import-file-wrapper').css('display', 'none');
+                                $('#form-import\\:button-submit').css('display', 'none');
+                                $('#form-import\\:load-wrapper').css('display', 'block');
+                                updateProgress()" styleClass="btn btn-primary" action="#{dependencyBean.import_.begin()}">
+                            Comenzar <i class="fa fa-upload"></i>
+                            <f:ajax execute="@form" render="@none" />
+                        </h:commandLink>
+                    </div>
+                </h:form>
+                <h:form id="form-progress">
+                    <h:inputHidden id="percent" value="#{dependencyBean.import_.percentLoad}" />
+                    <h:inputHidden id="content" value="#{dependencyBean.import_.renderContent}" />
+                    <h:inputHidden id="finalize" value="#{dependencyBean.import_.state.terminate}" />
+                    <h:inputHidden id="state" value="#{dependencyBean.import_.state.description}" />
+                    <h:inputHidden id="message" value="#{dependencyBean.import_.message}" />
+                    <p:remoteCommand  name="updateProgress" oncomplete="Dependency.updateProgress()" process="@this" update=":form-progress"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <ui:include src="dependency-copy.xhtml" />
+</ui:composition>

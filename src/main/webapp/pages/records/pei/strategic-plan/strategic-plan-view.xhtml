@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <script src="#{request.contextPath}/pages/records/pei/strategic-plan/js/strategic-plan.view.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="year" value="#{strategicPlanBean.year}" />
+        <p:remoteCommand name="search" action="#{strategicPlanBean.search()}" onstart="StrategicPlan.beginSearch()" oncomplete="StrategicPlan.endSearch()" update=":table-wrapper" />
+
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedStrategicPlanBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedStrategicPlanBean}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/pei/strategic-plan/strategic-plan-managed.xhtml" />
+        </p:commandLink>
+
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Home</li><li>Miscellaneous</li><li>Blank Page</li>
+        </ol>
+    </div>
+    <!-- END RIBBON -->
+
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <!-- row -->
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Registros
+                        <span>>  
+                            Rubros
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:StrategicPlan.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar plazo de plan estr. </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-darken"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+                            <div>
+
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por año</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="input-group input-group-md">
+                                                    <select id="year" >
+                                                        <option/>
+                                                        <ui:repeat var="year" value="#{strategicPlanBean.years}">
+                                                            <option value="#{year}">A&ntilde;o #{year}</option>
+                                                        </ui:repeat>
+                                                    </select>
+                                                    <span class="input-group-btn">
+                                                        <button onclick="$('#year').val('').trigger('change')" class="btn btn-default" style="background:#eee;color: rgb(153,153,153)" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="StrategicPlan.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="col-sm-8">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Lista de Planes Estrategicos</h2>
+                                <div class="widget-toolbar">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-default btn-xs active">
+                                            <input type="radio" /> <i class="fa fa-list"></i>
+                                        </label>
+                                        <label class="btn btn-default btn-xs">
+                                            <input type="radio" /> <i class="fa fa-sitemap"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </header>
+                            <div>
+                                <div class="jarviswidget-editbox">
+
+                                </div>
+                                <div class="widget-body no-padding">
+                                    <h:panelGroup id="table-wrapper" layout="block">
+                                        <script>
+                                            $(function () {
+                                                StrategicPlan.paginateResult();
+                                            });</script>
+                                        <table id="result-table" class="table table-bordered table-striped table-condensed table-hover smart-form " width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-xs-10">Nombre </th>
+                                                    <th style="min-width: 70px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ui:repeat value="#{strategicPlanBean.data}" var="item" varStatus="status">
+                                                    <tr>
+                                                        <td>#{item['name'].toUpperCase()}</td>
+                                                        <td class="text-center" style="vertical-align: middle !important">
+                                                            <h:form>
+                                                                <div class="btn-group">
+                                                                    <a onclick="$('#myModal').modal()" class="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></a>
+                                                                    <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                        <i class="fa fa-edit"></i>
+                                                                        <f:setPropertyActionListener target="#{managedStrategicPlanBean.idSelected}" value="#{item['id']}" />
+                                                                        <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedStrategicPlanBean}" />
+                                                                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/pei/strategic-plan/strategic-plan-managed.xhtml" />
+                                                                    </p:commandLink>
+                                                                    <a class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
+                                                                </div>
+                                                            </h:form>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </tbody>
+                                        </table>
+                                        <input id="message-search" type="hidden" value=""  />
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Article Post</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Title" required="true" />
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" placeholder="Content" rows="5" required="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="category"> Category</label>
+                                <select class="form-control" id="category">
+                                    <option>Articles</option>
+                                    <option>Tutorials</option>
+                                    <option>Freebies</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tags"> Tags</label>
+                                <input type="text" class="form-control" id="tags" placeholder="Tags" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="well well-sm well-primary">
+                                <form class="form form-inline " role="form">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="" placeholder="Date" required="true" />
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="form-control">
+                                            <option>Draft</option>
+                                            <option>Published</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <span class="glyphicon glyphicon-floppy-disk"></span> Save
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm">
+                                            <span class="glyphicon glyphicon-eye-open"></span> Preview
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        Post Article
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

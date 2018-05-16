@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/classifier.man.js"/>
+    <h:form id="form">
+        <h:inputHidden id="path" value="#{managedClassifierBean.path}"/>
+        <h:inputHidden id="name" value="#{managedClassifierBean.name}"/>
+        <h:inputHidden id="description" value="#{managedClassifierBean.description}"/>
+        <h:inputHidden id="create-again" value="#{managedClassifierBean.createAgain}"/>
+        <p:remoteCommand 
+            name="validatePath" 
+            update="form:validate-path-wrapper,:parents" 
+            oncomplete="Classifier.endValidatePath()"
+            process="@this,path" action="#{managedClassifierBean.validateCode.verify()}" />
+        <p:remoteCommand 
+            name="save" 
+            update=":main" 
+            process="@this,path,name,description,create-again" action="#{managedClassifierBean.save()}" />
+        <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{classifierBean.onLoad(true)}">
+            <f:setPropertyActionListener value="/pages/records/classifier.xhtml" target="#{navigationBean.content}" />
+            <f:setPropertyActionListener value="#{classifierBean}" target="#{sessionBean.loadable}" />
+        </p:commandLink>
+        <h:panelGroup id="validate-path-wrapper" layout="block">
+            <h:inputHidden id="path-valid" value="#{managedClassifierBean.validateCode.valid}" />
+            <h:inputHidden id="error-message" value="#{managedClassifierBean.validateCode.errorMessage}" />
+        </h:panelGroup>
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Registros</li><li>Clasificadores</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Presupuesto
+                        <span>&gt;  
+                            #{managedClassifierBean.selected.id eq null ? 'Creando clasificador' : 'Editando clasificador'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:Classifier.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:Classifier.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-sortable" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-darken"></i> 
+                                </span>
+                                <h2>Informacion</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <form id="fform-path">
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Código</label>
+                                                <div class="col-md-3">
+                                                    <div class="input-icon-right">
+                                                        <i class="glyphicon glyphicon-refresh fa-spin hidden"></i>
+                                                        <input id="path" name="path" autofocus="true" value="#{managedClassifierBean.path}" class="form-control" type="text"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form id="fform-other">
+                                            <div class="form-group">
+                                                <h:panelGroup id="parents" layout="block" class="col-md-offset-2 col-md-10 animated fadeInDown">
+                                                    <h:outputText value="#{managedClassifierBean.validateCode.html}" escape="false"/>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Nombre</label>
+                                                <div class="col-md-10">
+                                                    <input id="name" name="name" class="form-control" value="#{managedClassifierBean.name}"  type="text" placeholder="Ingrese nombre"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Descripcion</label>
+                                                <div class="col-md-10">
+                                                    <textarea id="description" name="description" class="form-control"  value="#{managedClassifierBean.description}"  rows="7" placeholder="Ingrese descripcion"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10 col-md-offset-2">
+                                                    <label class="checkbox-inline">
+                                                        <ui:fragment rendered="#{managedClassifierBean.createAgain}">
+                                                            <script>
+                                                                $(function(){
+                                                                     document.getElementById("create-again").checked =true;
+                                                                })
+                                                            </script>
+                                                        </ui:fragment>
+                                                        <input id="create-again" type="checkbox"  class="checkbox style-0"/>
+                                                        <span>Crear nuevo al terminar</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+                </div>
+                <!-- end row -->
+
+            </section>
+        </div>
+        <!-- end row -->
+    </div>
+</ui:composition>

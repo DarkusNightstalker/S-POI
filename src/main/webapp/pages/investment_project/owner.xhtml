@@ -1,0 +1,396 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/ip.reg.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="name" value="#{investmentProjectBean.search}" />
+        <p:remoteCommand name="search" action="#{investmentProjectBean.search()}" onstart="IP.beginSearch()" oncomplete="IP.endSearch()" update=":table-wrapper" />
+        
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedInvestmentProjectBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedInvestmentProjectBean}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/budget_program.xhtml" />
+        </p:commandLink>
+
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Programas de Inversión</li>
+        </ol>
+    </div>
+    <!-- END RIBBON -->
+
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <!-- row -->
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Registros
+                        <span>>  
+                            Mis programas de inversión
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">  
+                        <div class="btn-group">
+                            <a href="javascript:IP.create()" class="btn btn-sm btn-success"> <i class="fa fa-envelope"></i> Enviar petición nueva</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false"
+                             data-widget-sortable="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-darken"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por titulo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="fa fa-tag"></i>
+                                                            <input type="text" id="name" value="#{investmentProjectBean.search}" class="form-control" placeholder="Ingrese el nombre"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="IP.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- end widget -->
+                    </article>
+
+                    <article  class="col-sm-8">
+                        <!-- new widget -->
+                        <div id="jarvis-data-list" class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false"
+                             data-widget-sortable="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Lista de Proyectos</h2>
+                                <div class="widget-toolbar" id="switch-1" role="menu">
+                                    <button type="button" onclick="$('#modal-download').modal()" style="background: none;border: none"><i class="fa fa-download"></i></button>
+                                </div>
+                            </header>
+
+                            <!-- widget div-->
+                            <div>
+
+                                <!-- widget edit box -->
+                                <div class="jarviswidget-editbox">
+                                    <!-- This area used as dropdown edit box -->
+
+                                </div>
+                                <!-- end widget edit box -->
+
+                                <!-- widget content -->
+                                <div class="widget-body no-padding">
+                                    <h:panelGroup id="table-wrapper" layout="block">
+                                        <h:form>
+                                            <div class="dataTables_wrapper form-inline no-footer">
+                                                <div class="dt-toolbar-footer">
+                                                    <div class="col-sm-6 col-xs-12 hidden-xs">
+                                                        <div class="dataTables_info" >
+                                                            <h:outputText escape="false" value="#{investmentProjectBean.pagination.message()}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="dataTables_paginate paging_simple_numbers" id="result-table_paginate">
+                                                            <ul class="pagination pagination-sm">
+
+                                                                <ui:fragment rendered="#{investmentProjectBean.pagination.recordStart eq 1 or investmentProjectBean.pagination.recordStart eq null}">
+                                                                    <li class="paginate_button disabled previous">
+                                                                        <a href="javascript:void(0)"><i class="fa fa-arrow-left"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{investmentProjectBean.pagination.recordStart gt 1}">
+                                                                    <li class="paginate_button previous">
+                                                                        <a href="javascript:pagePrevious()"><i class="fa fa-arrow-left"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+<!--                                                                <ui:fragment rendered="#{investmentProjectBean.pagination.page ne null}">
+                                                                    <li class="paginate_button #{1 eq investmentProjectBean.pagination.page ? 'active' : ''}">
+                                                                        <a href="#">1</a>
+                                                                    </li>
+
+                                                                    <ui:fragment rendered="#{investmentProjectBean.pagination.lastPage ne 1}">
+
+                                                                        <ui:fragment rendered="#{investmentProjectBean.pagination.lastPage gt 2}">
+                                                                            <ui:fragment rendered="#{investmentProjectBean.pagination.page lt 5}">
+                                                                                <li class="paginate_button ">
+                                                                                </li>
+
+                                                                                <li class="paginate_button ">
+                                                                                    <a href="#">3</a>
+                                                                                </li>
+
+                                                                                <li class="paginate_button active">
+                                                                                    <a href="#">4</a>
+                                                                                </li>
+                                                                            </ui:fragment>
+
+                                                                            <li class="paginate_button ">
+                                                                                <a href="#">5</a>
+                                                                            </li>
+
+                                                                            <li class="paginate_button disabled">
+                                                                                <a href="#">…</a>
+                                                                            </li>
+                                                                        </ui:fragment>
+
+                                                                        <li class="paginate_button #{investmentProjectBean.pagination.lastPage eq investmentProjectBean.pagination.page ? 'active' : ''}">
+                                                                            <a href="#">#{investmentProjectBean.pagination.lastPage}</a>
+                                                                        </li>
+                                                                    </ui:fragment>
+                                                                </ui:fragment>-->
+
+
+                                                                <ui:fragment rendered="#{investmentProjectBean.pagination.recordEnd eq investmentProjectBean.pagination.totalRecords or investmentProjectBean.pagination.recordEnd eq null}">
+                                                                    <li class="paginate_button disabled next">
+                                                                        <a href="javascript:void(0)"><i class="fa fa-arrow-right"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{investmentProjectBean.pagination.recordEnd ne investmentProjectBean.pagination.totalRecords and investmentProjectBean.pagination.recordEnd ne null}">
+                                                                    <li class="paginate_button next">
+                                                                        <a href="javascript:pageNext()"><i class="fa fa-arrow-right"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <table id="result-table" class="table table-bordered table-striped table-condensed table-hover smart-form " width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-xs-7">Proyecto</th>
+                                                            <th class="col-xs-1">Estado</th>
+                                                            <th class="col-xs-2">Fec. envio</th>
+                                                            <th class="col-xs-2">Fec. aprob.</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{investmentProjectBean.pagination.data}" var="item" varStatus="status">
+                                                            <tr>
+                                                                <td class="text-center" style="vertical-align: middle !important">#{item[1]}</td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <ui:fragment rendered="#{item[8] eq null}">
+                                                                        <span class="label label-warning">En espera</span>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{item[8] ne null}">
+                                                                        <ui:fragment rendered="#{item[8]}">
+                                                                            <span class="label label-success">Aprobado</span>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{not item[8]}">
+                                                                            <span class="label label-danger">Desaprobado</span>
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>
+                                                                </td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <h:outputText value="#{item[5]}">
+                                                                        <f:convertDateTime pattern="dd/MM/yyyy hh:mm aa"/>
+                                                                    </h:outputText>
+                                                                </td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <h:outputText value="#{item[6]}">
+                                                                        <f:convertDateTime pattern="dd/MM/yyyy hh:mm aa"/>
+                                                                    </h:outputText>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                    <ui:fragment rendered="#{empty investmentProjectBean.pagination.data}">
+
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="4">
+                                                                    <h3 class="text-muted">Ningun registro encontrado</h3>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </ui:fragment>
+                                                </table>
+                                                <div class="dt-toolbar">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="dataTables_info">
+                                                            Página <span class="txt-color-darken">#{investmentProjectBean.pagination.page}</span> de  <span class="txt-color-darken">#{investmentProjectBean.pagination.lastPage}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 col-xs-12 hidden-xs">
+                                                        <div class="dataTables_length" id="result-table_length">
+                                                            <label>
+                                                                <h:selectOneMenu value="#{investmentProjectBean.pagination.rows}" class="form-control">
+                                                                    <f:selectItems value="#{investmentProjectBean.pagination.rowsData}" var="r" itemValue="#{r[0]}" itemLabel="#{r[1]}"/>
+                                                                    <p:ajax event="change" 
+                                                                            onstart="begin_load()"
+                                                                            oncomplete="end_load()" process="@this" listener="#{investmentProjectBean.pagination.changeRows()}" update=":table-wrapper" />
+                                                                </h:selectOneMenu>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p:remoteCommand name="pageNext" action="#{investmentProjectBean.pagination.next()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                            <p:remoteCommand name="pagePrevious" action="#{investmentProjectBean.pagination.previous()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                        </h:form>
+                                        <input id="message-search" type="hidden" value=""  />
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+            </section>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-download" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar programas presupuestales</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form styleClass="form-horizontal">
+                        <p:commandLink ajax="false" process="@form" action="#{investmentProjectBean.export.toXlsx()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Excel
+                        </p:commandLink>
+                        <p:commandLink ajax="false" process="@form"  action="#{investmentProjectBean.export.toPdf()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            PDF
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{investmentProjectBean.export.toDocx()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Word
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{investmentProjectBean.export.toTxt()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-text-o text-muted"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Texto plano
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{investmentProjectBean.export.toSyBase()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-database text-warning"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            dBase
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{investmentProjectBean.export.toHtml()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            HTML
+                        </p:commandLink>
+                        <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label class="checkbox-inline">
+                                    <h:selectBooleanCheckbox value="#{investmentProjectBean.export.activeHeader}" styleClass="checkbox" />
+                                    <span>Incluir cabecera</span>
+                                </label>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="false">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <h:selectBooleanCheckbox value="#{investmentProjectBean.export.allowDropped}" styleClass="checkbox" />
+                                        <span>Excluir eliminados</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</ui:composition>

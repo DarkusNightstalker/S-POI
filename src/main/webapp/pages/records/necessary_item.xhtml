@@ -1,0 +1,425 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/necessary_item.reg.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="code" value="#{necessaryItemBean.code}" />
+        <h:inputHidden id="name" value="#{necessaryItemBean.name}" />
+        <h:inputHidden id="generic-classifier" value="#{necessaryItemBean.genericClassifier}" />
+        <p:remoteCommand name="search" action="#{necessaryItemBean.search()}" onstart="NecessaryItem.beginSearch()" oncomplete="NecessaryItem.endSearch()" update=":table-wrapper" />
+        <p:remoteCommand name="beginImport" action="#{necessaryItemBean.import_.refresh()}" oncomplete="$('#modal-import').modal({backdrop:'static',keyboard:false})" update=":form-progress,:form-import" />
+        <p:remoteCommand name="del" action="#{managedNecessaryItemBean.delete(necessaryItemBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+        <p:remoteCommand name="recovery" action="#{managedNecessaryItemBean.recovery(necessaryItemBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedNecessaryItemBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedNecessaryItemBean}" />
+            <f:setPropertyActionListener target="#{managedNecessaryItemBean.keepManaged}" value="#{false}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/necessary_item.xhtml" />
+            <p:remoteCommand name="changeOrder" action="#{necessaryItemBean.changeOrder()}"  process="@this"
+                             onstart="begin_load()"
+                             oncomplete="end_load()" update=":form-table"/>
+        </p:commandLink>
+
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Cuadro de necesidades</li><li>Item de compra</li>
+        </ol>
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <i class="fa-fw fa fa-home"></i> 
+                        Registros
+                        <span>>  
+                            Item de necesidad
+                        </span>
+                    </h1>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:beginImport()" class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> Importar datos</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:NecessaryItem.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar item </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="widget-grid" class="">
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-dark"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por tipo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="input-group input-group-md">
+                                                    <select id="generic-classifier" >
+                                                        <option/>
+                                                        <ui:repeat var="item" value="#{necessaryItemBean.genericClassifierSearcher.data}">
+                                                            <option value="#{item[0]}">#{item[2]}</option>
+                                                        </ui:repeat>
+                                                    </select>
+                                                    <span class="input-group-btn">
+                                                        <button onclick="$('#generic-classifier').val('').trigger('change')" class="btn btn-default" style="background:#eee;color: rgb(153,153,153)" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por codigo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="glyphicon glyphicon-barcode"></i>
+                                                            <input type="text" id="code" value="#{necessaryItemBean.code}" autofocus="true" class="form-control" placeholder="Ingrese el codigo"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por nombre</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="fa fa-tag"></i>
+                                                            <input type="text" id="name" value="#{necessaryItemBean.name}" class="form-control" placeholder="Ingrese el nombre"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="NecessaryItem.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="col-sm-8">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-dark"></i> 
+                                </span>
+                                <h2>Lista de Items de necesidad</h2>
+                                <div class="widget-toolbar" id="switch-1" role="menu">
+                                    <button type="button" onclick="$('#modal-download').modal()" style="background: none;border: none"><i class="fa fa-download"></i></button>
+                                </div>
+                            </header>
+
+                            <div>
+
+                                <div class="jarviswidget-editbox">
+                                </div>
+                                <div class="widget-body no-padding">
+                                    <script>
+                                        $(function () {
+                                            $("#table-wrapper").on("keyup", function (evt) {
+                                                alert(evt);
+                                            })
+                                        });
+                                    </script>
+                                    <h:panelGroup id="table-wrapper" layout="block">
+                                        <h:form id="form-table">
+                                            <div class="dataTables_wrapper form-inline no-footer">
+
+                                                <ui:include src="/layout/pagination_header.xhtml">
+                                                    <ui:param name="pagination" value="#{necessaryItemBean.pagination}"/>
+                                                    <ui:param name="order_factory" value="#{necessaryItemBean.orderFactory}"/>
+                                                    <ui:param name="update_script" value="search()"/>
+                                                </ui:include>
+                                                <table id="result-table" class="table table-bordered table-striped table-condensed table-hover smart-form dataTable no-footer" width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{necessaryItemBean.orderFactory}" />
+                                                                <ui:param name="label" value="Clasificador" />
+                                                                <ui:param name="field" value="c.path" />
+                                                                <ui:param name="class" value="col-xs-2" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{necessaryItemBean.orderFactory}" />
+                                                                <ui:param name="label" value="Corr." />
+                                                                <ui:param name="field" value="correlative" />
+                                                                <ui:param name="class" value="col-xs-1 text-center" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{necessaryItemBean.orderFactory}" />
+                                                                <ui:param name="label" value="Nombre" />
+                                                                <ui:param name="field" value="name" />
+                                                                <ui:param name="class" value="col-xs-7" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{necessaryItemBean.orderFactory}" />
+                                                                <ui:param name="label" value="Precio" />
+                                                                <ui:param name="field" value="unitPrice" />
+                                                                <ui:param name="class" value="col-xs-2" />
+                                                            </ui:include>
+                                                            <th style="min-width: 80px"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{necessaryItemBean.pagination.data}" var="item" varStatus="status">
+                                                            <tr>
+
+                                                                <td class="text-center" style="vertical-align: middle">#{item[2]}</td>
+                                                                <td class="text-center"  style="vertical-align: middle">#{item[3]}</td>
+                                                                <td  style="vertical-align: middle">#{item[4].toUpperCase()}</td>
+                                                                <td class="text-right"  style="vertical-align: middle">#{item[5]}</td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <div class="btn-group">
+                                                                        <p:commandLink  title="Mas Información..." styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle txt-color-white"></i></p:commandLink>
+                                                                        <p:commandLink title="Editar" process="@this" update=":main"  styleClass="btn btn-warning  btn-xs">
+                                                                            <i class="fa fa-edit txt-color-white"></i>
+                                                                            <f:setPropertyActionListener target="#{managedNecessaryItemBean.idSelected}" value="#{item[0]}" />
+                                                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedNecessaryItemBean}" />
+                                                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/necessary_item.xhtml" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink onclick="$(this).blur()" process="@this" styleClass="btn btn-danger btn-xs" oncomplete="NecessaryItem.delete('#{item[3]}')">
+                                                                            <i class="fa fa-trash-o"></i>
+                                                                            <f:setPropertyActionListener target="#{necessaryItemBean.id}" value="#{item[0]}" />
+                                                                        </p:commandLink>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                </table>
+                                                <ui:include src="/layout/pagination_footer.xhtml">
+                                                    <ui:param name="pagination" value="#{necessaryItemBean.pagination}"/>
+                                                </ui:include>
+
+                                            </div>
+                                            <input id="message-search" type="hidden" value=""  />
+                                            <p:remoteCommand name="pageNext" action="#{necessaryItemBean.pagination.next()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                            <p:remoteCommand name="pagePrevious" action="#{necessaryItemBean.pagination.previous()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                        </h:form>
+                                    </h:panelGroup>
+
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-download" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar unidades presupuestales</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form styleClass="form-horizontal">
+                        <p:commandLink ajax="false" process="@form" action="#{necessaryItemBean.export.toXlsx()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Excel
+                        </p:commandLink>
+                        <p:commandLink ajax="false" process="@form"  action="#{necessaryItemBean.export.toPdf()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            PDF
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{necessaryItemBean.export.toDocx()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Word
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{necessaryItemBean.export.toTxt()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-text-o text-muted"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Texto plano
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{necessaryItemBean.export.toSyBase()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-database text-warning"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            dBase
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{necessaryItemBean.export.toHtml()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            HTML
+                        </p:commandLink>
+                        <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label class="checkbox-inline">
+                                    <h:selectBooleanCheckbox value="#{necessaryItemBean.export.activeHeader}" styleClass="checkbox" />
+                                    <span>Incluir cabecera</span>
+                                </label>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="false">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <h:selectBooleanCheckbox value="#{necessaryItemBean.export.allowDropped}" styleClass="checkbox" />
+                                        <span>Excluir eliminados</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" ><i class="fa fa-file-excel-o"></i> Importar desde Excel</h4>
+                </div>
+                <h:form id="form-import" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div id="import-file-wrapper" class="smart-form">
+                            <section>
+                                <label class="label">Importa desde</label>
+                                <div class="input input-file">
+                                    <span class="button">
+                                        <h:inputFile id="file" value="#{necessaryItemBean.import_.file}" onchange="document.getElementById('import-display-file').value = this.value" />Buscar
+                                    </span>
+                                    <input type="text" id="import-display-file" onclick="" placeholder="Seleccione un archivo" readonly=""/>
+                                </div>
+                            </section>
+                        </div>
+                        <h:panelGroup style="display: none" styleClass="animated fadeInDown" id="load-wrapper">
+                            <p>
+                                <span id="import-state">#{necessaryItemBean.import_.state.description}</span> <span class="txt-color-purple pull-right"><i class="fa fa-warning"></i><span id="import-percent">0</span>% Completado</span>
+                            </p>
+                            <div class="progress progress-sm progress-striped active">
+                                <div id="import-progress-bar" class="progress-bar bg-color-darken" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div id="import-data" style="max-height: 200px;overflow-y: auto;border: 4px dashed #EFEFEF">
+                                <table class="table table-condensed smart-form " width="100%">
+                                    <thead class="hidden">
+                                        <tr>
+                                            <th style="min-width: 30px"></th>
+                                            <th class="col-xs-3"></th>
+                                            <th class="col-xs-9"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </h:panelGroup>
+
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink id="button-submit" onclick="$('#import-file-wrapper').css('display', 'none');
+                                $('#form-import\\:button-submit').css('display', 'none');
+                                $('#form-import\\:load-wrapper').css('display', 'block');
+                                updateProgress()" styleClass="btn btn-primary" action="#{necessaryItemBean.import_.begin()}">
+                            Comenzar <i class="fa fa-upload"></i>
+                            <f:ajax execute="@form" render="@none" />
+                        </h:commandLink>
+                    </div>
+                </h:form>
+                <h:form id="form-progress">
+                    <h:inputHidden id="percent" value="#{necessaryItemBean.import_.percentLoad}" />
+                    <h:inputHidden id="content" value="#{necessaryItemBean.import_.renderContent}" />
+                    <h:inputHidden id="finalize" value="#{necessaryItemBean.import_.state.terminate}" />
+                    <h:inputHidden id="state" value="#{necessaryItemBean.import_.state.description}" />
+                    <h:inputHidden id="message" value="#{necessaryItemBean.import_.message}" />
+                    <p:remoteCommand  name="updateProgress" oncomplete="NecessaryItem.updateProgress()" process="@this" update=":form-progress"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+</ui:composition>

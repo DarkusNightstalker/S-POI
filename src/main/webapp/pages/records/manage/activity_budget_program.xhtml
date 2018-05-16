@@ -1,0 +1,376 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/abp.man.js"/>
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Registros</li><li>Rubros</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Datos del MEF
+                        <span>&gt;  
+                            #{managedActivityBudgetProgramBean.selected.id eq null ? 'Creando actividad presupuestal' : 'Editando actividad presupuestal'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:ABP.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:ABP.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-sortable" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-darken"></i> 
+                                </span>
+                                <h2>Informacion</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <h:form id="form">
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Código</label>
+                                                <div class="col-md-3">    
+                                                    <h:inputText id="code" styleClass="form-control" value="#{managedActivityBudgetProgramBean.code}">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese el codigo" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Sec. func.</label>
+                                                <div class="col-md-3">    
+                                                    <h:inputText id="functional-sequence" styleClass="form-control" value="#{managedActivityBudgetProgramBean.functionalSequence}">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese la sec funcional" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Nombre</label>
+                                                <div class="col-md-10">
+                                                    <h:inputText id="name" styleClass="form-control" value="#{managedActivityBudgetProgramBean.name}">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese nombre" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <h:panelGroup id="bp-wrapper" layout="block" styleClass="form-group">
+                                                <label class="col-md-2 control-label">Prog. presupuestario</label>
+                                                <div class="col-md-10">
+                                                    <div class="input-group">
+                                                        <script>
+                                                            $(function () {
+                                                                ABP.configureBP();
+                                                            })
+                                                        </script>
+                                                        <h:selectOneMenu id="budget-program" value="#{managedActivityBudgetProgramBean.budgetProgramSearcher.selected}">
+                                                            <f:selectItem/>
+                                                            <f:selectItems 
+                                                                value="#{managedActivityBudgetProgramBean.budgetProgramSearcher.data}" 
+                                                                var="item"
+                                                                itemLabel="&nbsp;&nbsp;#{item[1]}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| #{item[2]}"
+                                                                itemValue="#{item[0]}"/>
+                                                            <p:ajax event="change" process="budget-program" listener="#{managedActivityBudgetProgramBean.budgetProgramSearcher.change()}" update="form:pbp-wrapper" />
+                                                        </h:selectOneMenu>  
+                                                        <div class="input-group-btn">
+                                                            <p:commandLink process="@this" styleClass="btn btn-default"  action="#{managedActivityBudgetProgramBean.managedBudgetProgramBean.create()}" update=":form-bp"  oncomplete="$('#modal-bp').modal()">
+                                                                <span class="fa fa-plus"></span>
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                            <h:panelGroup layout="block" id="pbp-wrapper" styleClass="form-group">
+                                                <label class="col-md-2 control-label">Producto/Proyecto</label>
+                                                <div class="col-md-10">
+                                                    <div class="input-group">
+                                                        <script>
+                                                            $(function () {
+                                                                ABP.configurePBP('#{managedActivityBudgetProgramBean.budgetProgramSearcher.selected eq null ? '---' : 'Seleccione un programa presupuestal'}')
+                                                            })
+                                                        </script>
+                                                        <h:selectOneMenu id="product-budget-program" disabled="#{managedActivityBudgetProgramBean.budgetProgramSearcher.selected eq null}" value="#{managedActivityBudgetProgramBean.productBudgetProgramSearcher.selected}">
+                                                            <f:selectItem/>
+                                                            <f:selectItems 
+                                                                value="#{managedActivityBudgetProgramBean.productBudgetProgramSearcher.data}" 
+                                                                var="item"
+                                                                itemLabel="#{item[1]} || #{item[2]}"
+                                                                itemValue="#{item[0]}"/>
+                                                        </h:selectOneMenu>  
+                                                        <div class="input-group-btn">
+                                                            <p:commandLink styleClass="btn btn-default" process="@this" action="#{managedActivityBudgetProgramBean.managedProductBudgetProgramBean.create()}" update=":form-pbp" oncomplete="$('#modal-pbp').modal()">
+                                                                <span class="fa fa-plus"></span>
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Funcion</label>
+                                                        <div class="col-md-6">
+                                                            <h:inputText id="function" styleClass="form-control" value="#{managedActivityBudgetProgramBean.function}">
+                                                                <f:passThroughAttribute name="placeholder" value="Ingrese funcion" />
+                                                            </h:inputText>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Grupo funcional</label>
+                                                        <div class="col-md-6">
+                                                            <h:inputText id="functional-group" styleClass="form-control" value="#{managedActivityBudgetProgramBean.functionalGroup}">
+                                                                <f:passThroughAttribute name="placeholder" value="Ingrese grupo funcional" />
+                                                            </h:inputText>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Div. funcional</label>
+                                                <div class="col-md-3">
+                                                    <h:inputText id="functional-division" styleClass="form-control" value="#{managedActivityBudgetProgramBean.functionalDivision}">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese division funcional" />
+                                                    </h:inputText>
+                                                </div>
+                                                <label class="col-md-offset-1 col-md-2 control-label">Finalidad</label>
+                                                <div class="col-md-3">
+                                                    <h:inputText id="goal" styleClass="form-control" value="#{managedActivityBudgetProgramBean.goal}">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese finalidad" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Unid. de Medida</label>
+                                                <div class="col-md-4">
+                                                    <div class="input-group">
+                                                        <script>
+                                                            $(function () {
+                                                                $("#form\\:uom").select2({
+                                                                    width: "100%",
+                                                                    placeholder: "Seleccione una unidad"
+                                                                });
+                                                            })
+                                                        </script>
+                                                        <h:selectOneMenu id="uom" value="#{managedActivityBudgetProgramBean.uomSearcher.selected}">
+                                                            <f:selectItem/>
+                                                            <f:selectItems 
+                                                                value="#{managedActivityBudgetProgramBean.uomSearcher.data}" 
+                                                                var="item"
+                                                                itemLabel="#{item[1]} || #{item[2]}"
+                                                                itemValue="#{item[0]}"/>
+                                                        </h:selectOneMenu>
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" onclick="$('#modal-uom').modal()" type="button">
+                                                                <span class="fa fa-plus"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10 col-md-offset-2">
+                                                    <label class="checkbox-inline">
+                                                        <h:selectBooleanCheckbox id="create-again" value="#{managedActivityBudgetProgramBean.createAgain}"  styleClass="checkbox"/>
+                                                        <span>Crear nuevo al terminar</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <p:remoteCommand 
+                                                name="save" 
+                                                update=":main" 
+                                                process="@form"
+                                                action="#{managedActivityBudgetProgramBean.doSave('/pages/records/activity_budget_program.xhtml',activityBudgetProgramBean)}" />
+                                            <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{activityBudgetProgramBean.onLoad(true)}">
+                                                <f:setPropertyActionListener value="/pages/records/activity_budget_program.xhtml" target="#{navigationBean.content}" />
+                                                <f:setPropertyActionListener value="#{activityBudgetProgramBean}" target="#{sessionBean.loadable}" />
+                                            </p:commandLink> 
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+                </div>
+                <!-- end row -->
+
+            </section>
+        </div>
+        <!-- end row -->
+    </div>
+
+    <div class="modal fade" id="modal-pbp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">Agregar Producto/Proyecto</h4>
+                </div>
+                <h:form id="form-pbp">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Codigo</label>
+                                <div class="col-md-3">
+                                    <h:inputText id="code" value="#{managedActivityBudgetProgramBean.managedProductBudgetProgramBean.code}" styleClass="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Nombre</label>
+                                <div class="col-md-9">
+                                    <h:inputText id="name" value="#{managedActivityBudgetProgramBean.managedProductBudgetProgramBean.name}" styleClass="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <h:inputHidden id="saved" value="#{managedActivityBudgetProgramBean.productBudgetProgramSearcher.saved}" />
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink process="@this,code,name" oncomplete="ABP.endSavedProductBudgetProgram()" update="form-bp:saved,:form:pbp-wrapper" action="#{managedActivityBudgetProgramBean.productBudgetProgramSearcher.saveAndSelect()}" styleClass="btn btn-primary">
+                            <span class="fa fa-floppy-o"></span> Guardar
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modal-bp">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">Agregar Programa presupuestario</h4>
+                </div>
+                <h:form id="form-bp">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Codigo</label>
+                                <div class="col-md-3">
+                                    <h:inputText id="code" styleClass="form-control" value="#{managedActivityBudgetProgramBean.managedBudgetProgramBean.code}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Nombre</label>
+                                <div class="col-md-10">
+                                    <h:inputText id="name" styleClass="form-control" value="#{managedActivityBudgetProgramBean.managedBudgetProgramBean.name}" />
+                                </div>
+                            </div>
+                        </div>
+                        <h:inputHidden id="saved" value="#{managedActivityBudgetProgramBean.budgetProgramSearcher.saved}" />
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink process="@this,code,name" oncomplete="ABP.endSavedBudgetProgram()" update="form-bp:saved,:form:bp-wrapper,:form:pbp-wrapper" action="#{managedActivityBudgetProgramBean.budgetProgramSearcher.saveAndSelect()}" styleClass="btn btn-primary">
+                            <span class="fa fa-floppy-o"></span> Guardar
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal fade" id="modal-uom">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">Agregar unidad de medida</h4>
+                </div>
+                <h:form id="form-uom">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Codigo</label>
+                                <div class="col-md-3">
+                                    <h:inputText id="code" styleClass="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Nombre</label>
+                                <div class="col-md-10">
+                                    <h:inputText id="name" styleClass="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink styleClass="btn btn-primary">
+                            <span class="fa fa-floppy-o"></span> Guardar
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <script>
+        $(function () {
+            $(".modal-dialog").draggable()
+        })
+    </script>
+</ui:composition>

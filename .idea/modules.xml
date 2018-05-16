@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/S-POI_beta.iml" filepath="$PROJECT_DIR$/S-POI_beta.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../com.gkfire/com.gkfire.iml" filepath="$PROJECT_DIR$/../com.gkfire/com.gkfire.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dn.core3/dn.core3.iml" filepath="$PROJECT_DIR$/../dn.core3/dn.core3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dn.core3/target/maven-archiver/maven-archiver.iml" filepath="$PROJECT_DIR$/../dn.core3/target/maven-archiver/maven-archiver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../com.gkfire/target/maven-archiver/maven-archiver (1).iml" filepath="$PROJECT_DIR$/../com.gkfire/target/maven-archiver/maven-archiver (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dn.core3/target/maven-archiver/maven-archiver (2).iml" filepath="$PROJECT_DIR$/../dn.core3/target/maven-archiver/maven-archiver (2).iml" />
+    </modules>
+  </component>
+</project>

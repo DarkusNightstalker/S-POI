@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NecessaryItem" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="944632f3-5da5-4539-8e29-4e899a8c1bb2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="148"/>
+	<property name="ireport.y" value="0"/>
+	<style name="EvenOddRowStyle">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$F{active}]]></conditionExpression>
+			<style backcolor="#F2DEDE"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></conditionExpression>
+			<style backcolor="#F9F9F9"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="active" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="printHeader" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNAS" class="java.io.InputStream"/>
+	<queryString>
+		<![CDATA[SELECT c.path,ni.name,ni.uom,ni.unit_price,ni.create_date,ni.edit_date,ni.active FROM necessary_item ni join classifier c on ni.id_classifier = c.id;]]>
+	</queryString>
+	<field name="path" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="uom" class="java.lang.String"/>
+	<field name="unit_price" class="java.lang.Double"/>
+	<field name="create_date" class="java.sql.Timestamp"/>
+	<field name="edit_date" class="java.sql.Timestamp"/>
+	<field name="active" class="java.lang.Boolean"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="144" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="0382883c-4acd-4c1c-9354-4323f24439ea" x="273" y="39" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OFICINA DE PLANIFICACIÓN]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="80d0c567-c9d1-4c2d-8838-d03e2bf94535" x="222" y="1" width="49" height="64"/>
+				<imageExpression><![CDATA[$P{UNAS}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement uuid="9876b8f3-ffc8-4459-b732-566d2cc0032c" x="199" y="84" width="535" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="a683625f-df1c-40da-a243-ec6faf73fe92" x="199" y="70" width="535" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Av. Universitaria km 1.5, Telf (062) 561136, Anexo 290, Fax (062) 561156 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a4ca5a7d-1143-4c02-8745-7ba0ca104538" x="273" y="5" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="b623b310-6adb-4af6-8019-e15036813f8b" x="189" y="118" width="555" height="22" forecolor="#666666"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["al "+new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b2b45677-8dfc-4fcc-b773-bc54c329d00d" x="273" y="25" width="387" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Tingo María]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="52c8631e-9e70-4ecc-97e0-6598b80024ce" x="189" y="95" width="555" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Items de necesidad]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="fa639c24-ba98-422e-9bc2-d8a34f0aa97b" mode="Opaque" x="0" y="0" width="100" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="689bb793-17a4-4558-ad9d-eae445de8d0e" mode="Opaque" x="100" y="0" width="502" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7bf90f55-72a6-4283-9589-438e4f603e0f" mode="Opaque" x="602" y="0" width="100" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Unid. Medida]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="310ac030-3748-4c61-b84e-10377bbab6e0" mode="Opaque" x="702" y="0" width="100" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Prec. Unit.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement uuid="30aa4dde-d798-4d27-8360-c3a7c41bb135" style="EvenOddRowStyle" mode="Opaque" x="0" y="0" width="100" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{path}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="feb00d54-609d-4b11-bcbb-64f7677c3e50" style="EvenOddRowStyle" mode="Opaque" x="100" y="0" width="502" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="94bd305b-8fba-4f3d-9c82-4a358a8c7e1a" style="EvenOddRowStyle" mode="Opaque" x="602" y="0" width="100" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement uuid="2ee0c80d-e66f-4238-b8be-6d0634bae880" style="EvenOddRowStyle" mode="Opaque" x="702" y="0" width="100" height="15"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{unit_price}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

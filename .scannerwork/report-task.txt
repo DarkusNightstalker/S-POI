@@ -1,0 +1,6 @@
+projectKey=org.sonarqube:p_spoi
+serverUrl=http://localhost:9000
+serverVersion=7.1.0.11001
+dashboardUrl=http://localhost:9000/dashboard/index/org.sonarqube:p_spoi
+ceTaskId=AWNFHJ6yZivDNR-eeovN
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWNFHJ6yZivDNR-eeovN

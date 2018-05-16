@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Classifier" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="385aa9b4-2270-4b99-9975-7e0fe1ef94eb">
+	<property name="ireport.zoom" value="1.2078825000000004"/>
+	<property name="ireport.x" value="28"/>
+	<property name="ireport.y" value="0"/>
+	<style name="EvenOddRowStyle">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$F{active}]]></conditionExpression>
+			<style backcolor="#F2DEDE"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></conditionExpression>
+			<style backcolor="#F9F9F9"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="active" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNAS" class="java.io.InputStream"/>
+	<parameter name="printHeader" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select path,name,description,active from classifier
+WHERE (active = $P{active} OR  $P{active} is null)
+ORDER BY path;]]>
+	</queryString>
+	<field name="path" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="active" class="java.lang.Boolean"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="144" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="9e0fc10c-b9fb-4ee4-9cd3-66dee41a36b3" x="84" y="36" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OFICINA DE PLANIFICACIÓN]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="3da7c60d-df6c-4bae-a128-cde3f5d848f6" x="10" y="81" width="535" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="ee540cc9-1f38-4e4c-9038-1b3b9f057d0c" x="84" y="2" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="f0e6d49d-7b9b-47c9-a701-cd86ea2975da" x="33" y="-2" width="49" height="64"/>
+				<imageExpression><![CDATA[$P{UNAS}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="cc6cdeb1-1d97-4f18-8654-662272445c8b" x="0" y="115" width="555" height="22" forecolor="#666666"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["al "+new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="af9dbddb-e74c-4f44-8925-e1596c2f11aa" x="84" y="22" width="387" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Tingo María]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="121febaa-abe1-4bc6-8297-d9eda040eb09" x="10" y="67" width="535" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Av. Universitaria km 1.5, Telf (062) 561136, Anexo 290, Fax (062) 561156 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b3677823-34e8-463b-8f8b-e17506987d93" x="0" y="92" width="555" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Clasificadores de gastos]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="64a5c1fd-367c-4929-9b98-1bf325908191" mode="Opaque" x="82" y="0" width="178" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="794c7c6e-c33e-4b4d-a0e0-7b427f738c73" mode="Opaque" x="0" y="0" width="82" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="030f5c47-dd72-4ad2-9ed4-2cee77cb6336" mode="Opaque" x="260" y="0" width="295" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="c96fcc49-c1ab-4afd-806d-8f1296fa173a" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="82" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{path}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="09e0400c-b94f-4d63-b2d8-5d003611a733" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="82" y="0" width="178" height="20"/>
+				<box topPadding="5" bottomPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="86f2257f-d8a2-42c0-b5fd-fe80e50a0c74" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="260" y="0" width="295" height="20"/>
+				<box topPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description} == null ? "" : $F{description}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/pbp.man.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Registros</li><li>Prod/Proy Presupuestales</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Presupuestos
+                        <span>&gt;  
+                            #{managedProductBudgetProgramBean.selected.id eq null ? 'Creando producto/proyecto presup.' : 'Editando producto/proyecto presup.'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:PBP.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:PBP.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-sortable" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-darken"></i> 
+                                </span>
+                                <h2>Informacion</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <h:form id="form">
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Código</label>
+                                                <div class="col-md-3"> 
+                                                    <h:inputText id="code" value="#{managedProductBudgetProgramBean.code}" styleClass="form-control">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese codigo" />
+                                                        <f:passThroughAttribute name="autofocus" value="rue" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Nombre</label>
+                                                <div class="col-md-10">
+                                                    <h:inputText id="name" value="#{managedProductBudgetProgramBean.name}" styleClass="form-control">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese nombre" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Programas Presup.</label>
+                                                <div class="col-md-10">
+                                                    <script>
+                                                        $(function () {
+                                                            $(".permission-ck").on("change", function () {
+                                                                if ($(this).is(":disabled")) {
+                                                                    return;
+                                                                }
+                                                                if (this.checked) {
+                                                                    $(this).closest("tr").addClass("highlight");
+                                                                } else {
+                                                                    $(this).closest("tr").removeClass("highlight");
+                                                                }
+                                                            }).trigger("change").closest("tr").on("click", function () {
+                                                                if ($(this).find(".permission-ck").is(":disabled")) {
+                                                                    return;
+                                                                }
+                                                                $(this).find(".permission-ck").trigger("click");
+                                                            });
+                                                        });
+                                                    </script>
+                                                    <table id="inbox-table" class="table table-hover table-striped table-forum">
+                                                        <tbody>
+                                                            <ui:repeat value="#{managedProductBudgetProgramBean.budgetProgramSearcher.data}" var="item" >
+
+                                                                <tr style="#{item.active ? '' : 'opacity : 0.5'}" class="#{item.active ? '' : 'danger'}">
+                                                                    <td class="text-center" style="width: 40px;"><i class="fa fa-briefcase fa-2x text-muted"></i></td>
+                                                                    <td>
+                                                                        <h4>
+                                                                            <a href="javascript:void(0)">
+                                                                                #{item.name}
+                                                                            </a>
+                                                                            <small>#{item.code}</small>
+                                                                        </h4>
+                                                                    </td>
+                                                                    <td class="text-center" style="width: 40px;">
+                                                                        <label class="checkbox">
+                                                                            <h:selectBooleanCheckbox value="#{managedProductBudgetProgramBean.budgetProgramSearcher.selecteds[item.id]}" disabled="#{not item.active}"  styleClass="checkbox permission-ck" />
+                                                                            <span>&nbsp;</span>
+                                                                        </label>
+                                                                    </td>
+
+                                                                </tr>
+                                                            </ui:repeat>
+                                                        </tbody>
+                                                        <ui:fragment rendered="#{empty managedProductBudgetProgramBean.budgetProgramSearcher.data}">
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="3">
+                                                                        <h5 class="text-muted">No se ha encontrado programas presupuestales</h5>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </ui:fragment>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10 col-md-offset-2">
+                                                    <label class="checkbox-inline">
+                                                        <h:selectBooleanCheckbox value="#{managedProductBudgetProgramBean.createAgain}" id="create-again" styleClass="checkbox" />
+                                                        <span>Crear nuevo al terminar</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <p:remoteCommand 
+                                                name="save" 
+                                                update=":main" 
+                                                process="@form" action="#{managedProductBudgetProgramBean.doSave('/pages/records/product_budget_program.xhtml', productBudgetProgramBean)}" />
+                                            <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{productBudgetProgramBean.onLoad(true)}">
+                                                <f:setPropertyActionListener value="/pages/records/product_budget_program.xhtml" target="#{navigationBean.content}" />
+                                                <f:setPropertyActionListener value="#{productBudgetProgramBean}" target="#{sessionBean.loadable}" />
+                                            </p:commandLink>
+                                        </h:form>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+                </div>
+                <!-- end row -->
+
+            </section>
+        </div>
+        <!-- end row -->
+    </div>
+</ui:composition>

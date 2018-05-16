@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boxneed_functional_programmatic" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="45aa8a27-e4c8-40e1-bbc7-6eede1c8be5b">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="659"/>
+	<property name="ireport.y" value="0"/>
+	<import value="java.text.SimpleDateFormat"/>
+	<import value="java.util.Date"/>
+	<style name="padd" pattern="">
+		<box leftPadding="3" rightPadding="3"/>
+	</style>
+	<subDataset name="dependency_data" uuid="0076bd8c-5b07-459a-a3aa-23d2ca02295b">
+		<parameter name="id_dependency" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select
+	p.path as parent_code,
+	p.name as parent_name,
+	d.path as dependency_code,
+	d.name as dependency_name
+from
+	dependency d
+	left join dependency p on
+	d.id_parent = p.id
+WHERE  d.id = $P{id_dependency}]]>
+		</queryString>
+		<field name="parent_code" class="java.lang.String"/>
+		<field name="parent_name" class="java.lang.String"/>
+		<field name="dependency_code" class="java.lang.String"/>
+		<field name="dependency_name" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_dependency" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PERIODICITY-H" class="java.lang.Object"/>
+	<parameter name="PERIODICITY-VALUE" class="java.lang.Object"/>
+	<parameter name="UNAS" class="java.io.InputStream"/>
+	<queryString>
+		<![CDATA[SELECT
+	stg.id      as strategic_goal_id,
+	stg.code    as strategic_goal_code,
+	stg.name    as strategic_goal_name,
+	sa.id       as strategic_action_id,
+	sa.code     as strategic_action_code,
+	sa.name     as strategic_action_name,
+	poia.id     as operative_activity_id,
+	poia.code   as operative_activity_code,
+	poia.detail as operative_activity_name,
+	(
+		SELECT
+			SUM(quantity)
+		FROM
+			poi_schedule
+		WHERE id_poi_activity = poia.id
+	) as annual_goal,
+	pu.name    as poi_unity,
+	(
+		SELECT
+			SUM((SELECT
+				SUM(quantity)
+			FROM
+				bne_schedule
+			WHERE id_bne_item = bi.id)*bi.unit_price)
+		FROM
+			bne_item bi
+		WHERE id_poi_activity = poia.id AND bi.active = true
+	) as total_ammount,
+	poi.id_periodicity
+FROM
+	poi_activity poia
+	JOIN strategic_activity sa
+		ON poia.id_specific_activity = sa.id
+	JOIN specific_goal spg
+		ON sa.id_specific_goal = spg.id
+	JOIN strategic_goal stg
+		ON spg.id_strategic_goal = stg.id
+	JOIN poi_unity pu
+		ON pu.id = poia.id_poi_unity
+	JOIN poi poi
+		ON poia.id_poi = poi.id
+	JOIN dependency d
+		ON poi.id_dependency = d.id
+WHERE poi.id_dependency = $P{id_dependency}
+AND poi.year = $P{year}
+AND poia.active = true
+AND d.active = true
+ORDER BY stg.code, sa.code,poia.code]]>
+	</queryString>
+	<field name="strategic_goal_id" class="java.lang.Integer"/>
+	<field name="strategic_goal_code" class="java.lang.String"/>
+	<field name="strategic_goal_name" class="java.lang.String"/>
+	<field name="strategic_action_id" class="java.lang.Integer"/>
+	<field name="strategic_action_code" class="java.lang.String"/>
+	<field name="strategic_action_name" class="java.lang.String"/>
+	<field name="operative_activity_id" class="java.lang.Long"/>
+	<field name="operative_activity_code" class="java.lang.String"/>
+	<field name="operative_activity_name" class="java.lang.String"/>
+	<field name="annual_goal" class="java.lang.Long"/>
+	<field name="poi_unity" class="java.lang.String"/>
+	<field name="total_ammount" class="java.lang.Double"/>
+	<field name="id_periodicity" class="java.lang.Integer"/>
+	<group name="strategic_goal">
+		<groupExpression><![CDATA[$F{strategic_goal_name}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="0" y="0" width="802" height="17" forecolor="#FFFFFF" backcolor="#999999" uuid="d7989492-bc5d-47ad-93d3-4564b9c93dbb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{strategic_goal_code}+" - "+$F{strategic_goal_name}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="strategic_action">
+		<groupExpression><![CDATA[$F{strategic_action_name}]]></groupExpression>
+		<groupHeader>
+			<band height="17">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="19" y="0" width="783" height="16" backcolor="#CCCCCC" uuid="a4a27cf0-1571-42ca-9f99-acb88cd0f288"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{strategic_action_code}+" - "+$F{strategic_action_name}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="103" splitType="Stretch">
+			<textField>
+				<reportElement x="49" y="0" width="753" height="23" uuid="b8947284-aaab-4a75-b75c-fe78db2fa0d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PLAN OPERATIVO INSTITUCIONAL - POI "+$P{year}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="49" y="23" width="753" height="19" uuid="c5c62574-9887-408a-a058-75d39d13751c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Programación Financiera]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement key="table" x="0" y="53" width="802" height="37" uuid="cfa39913-774b-4d0a-ad03-f6961f7e0aab"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dependency_data" uuid="f5171d07-7d1b-4f78-ac8e-c3b0120fab8a">
+						<datasetParameter name="id_dependency">
+							<datasetParameterExpression><![CDATA[$P{id_dependency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="129" uuid="ad5c20f3-8b36-4b5b-90c0-0ba991a069d6">
+						<jr:columnHeader height="53" rowSpan="1">
+							<staticText>
+								<reportElement style="padd" x="0" y="0" width="129" height="13" uuid="c0826b0a-14fd-411b-b82d-5120def81ef1"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[PLIEGO:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="13" width="129" height="13" uuid="dac41776-f154-4f37-bf23-715fd85687f5"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[UNIDAD EJECUTORA:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="26" width="129" height="13" uuid="7ebf9236-8597-4616-b36e-74604317d07d"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[DEPENDENCIA:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="39" width="129" height="13" uuid="4532720a-0175-4dac-9408-513a53901b52"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[CENTRO DE COSTO:]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20" rowSpan="1"/>
+					</jr:column>
+					<jr:column width="442" uuid="72d91ce9-ee7e-4247-8298-6a80cca868d7">
+						<jr:columnHeader height="53" rowSpan="1">
+							<textField>
+								<reportElement style="padd" x="0" y="0" width="442" height="13" uuid="990fa9da-a523-458a-a018-81ca9ff25125"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA["526 Universidad Nacional Agraria de la Selva"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" x="0" y="13" width="442" height="13" uuid="c25de57e-5c37-4059-a4de-4a104ee28fec"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA["104 Universidad Nacional Agraria de la Selva"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" mode="Opaque" x="0" y="26" width="442" height="13" uuid="e1f1f5e2-1530-486c-be32-d8b2d396205e"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{parent_code}+" "+$F{parent_name}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" x="0" y="39" width="442" height="13" uuid="bc8d2335-1bea-4edc-b98e-157a14a93168"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dependency_code}+" "+$F{dependency_name}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell height="20" rowSpan="1"/>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<image>
+				<reportElement x="0" y="0" width="49" height="42" uuid="f1855e26-1a3d-459e-af7c-2bae4378d357"/>
+				<imageExpression><![CDATA[$P{UNAS}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="25">
+			<textField>
+				<reportElement x="702" y="0" width="100" height="20" uuid="862cfc1c-9f95-4890-8e47-ecb060c24dea"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())+" - SPOI"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="33" splitType="Stretch">
+			<subreport>
+				<reportElement x="383" y="14" width="371" height="13" uuid="5abc54fa-2f94-4d16-9a1d-941c05c9e02e"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{PERIODICITY-H}]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="754" y="0" width="48" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="d03b57c0-9dc1-48da-a254-149c9c0c7411"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MONTO POI (S/.)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="383" y="0" width="371" height="14" forecolor="#FFFFFF" backcolor="#999999" uuid="6b82c45b-26de-4b20-8b26-c9a793352857"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMACIÓN FINANCIERA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="0" y="0" width="19" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="23136fd1-f8ba-4394-b148-02a58abd2fb1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="19" y="0" width="20" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="685fc6f5-e70a-4639-89ce-34bc798a99c5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="40" y="0" width="37" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="2be844b6-7ea0-4fc4-adb5-09e40d9f6b6e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COD. AO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="297" y="0" width="42" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="e28dceb0-d184-4e2a-8bdb-c8c10391dc4b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[META FISICA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="340" y="0" width="43" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="0ced493f-33e8-4f68-9525-8c3bf0b6830b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[U.M.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="77" y="0" width="220" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="5160e238-aa5e-4e58-ba47-c22f954d72cc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ACTIVIDAD OPERATIVA]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="77" y="0" width="220" height="12" isPrintWhenDetailOverflows="true" uuid="25aa5d25-83a0-47e2-995b-4ffadfcc6c17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{operative_activity_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="340" y="0" width="43" height="12" uuid="ecd21c04-ab58-49b9-9b61-b7a90655d808"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{poi_unity}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="754" y="0" width="48" height="12" uuid="6d4fc716-4890-47d2-98c3-cd88fa9d8945"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_ammount}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="383" y="0" width="371" height="12" uuid="ca0f1bc7-c09b-462c-bbbb-8c56d238769a"/>
+				<subreportParameter name="id_poi_activity">
+					<subreportParameterExpression><![CDATA[$F{operative_activity_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{PERIODICITY-VALUE}]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="297" y="0" width="43" height="12" uuid="c206a745-d8ec-4744-aad0-d4aa5b4df622"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{annual_goal}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="39" y="0" width="38" height="12" uuid="e9c0e206-f86a-4722-bdb7-d12fe3184a0a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{operative_activity_code}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="17">
+			<staticText>
+				<reportElement x="11" y="5" width="778" height="12" uuid="ac500675-766f-4eb2-82dd-ff1a28a22a9c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Leyenda: OE= Objetivo Estrategivo | AE= Acción Estrategica | COD. AO= Codigo de la Actividad Operativa | U.M.= Unidad de Medida]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="18" splitType="Stretch">
+			<textField>
+				<reportElement x="658" y="0" width="144" height="16" uuid="5977297f-fc18-44c9-be4b-add71245bd3d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

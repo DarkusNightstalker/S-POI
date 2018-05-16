@@ -1,0 +1,386 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="form-nav-menu">
+        <aside id="left-panel">
+            <div class="login-info">
+                <span> 
+                    <a href="javascript:void(0);" id="show-shortcut" data-action="toggleShortcut">
+                        <img src="img/avatars/sunny.png" alt="me" class="online" /> 
+                        <span>
+                            #{sessionBean.currentUser.username} 
+                        </span>
+                        <i class="fa fa-angle-down"></i>
+                    </a> 
+                </span>
+            </div>
+            <nav>
+                <ul>
+                    <li>
+                        <p:commandLink 
+                            id="home"
+                            onclick="Menu.change(this, false)" 
+                            action="#{homeBean.onLoad(true)}" 
+                            update=":main"
+                            title="Dashboard">
+                            <i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Inicio</span>
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/home.xhtml" />
+                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{homeBean}" />
+                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:home',false)" />
+                        </p:commandLink>
+                    </li>
+
+                    <li jsf:rendered="#{sessionBean.authorize('V_BP') or sessionBean.authorize('V_PBP') or sessionBean.authorize('V_ABP') or sessionBean.authorize('V_UOM') or sessionBean.authorize('V_FS') or sessionBean.authorize('V_CL') or sessionBean.authorize('V_PEI') or sessionBean.authorize('V_SA') or sessionBean.authorize('V_STO') or sessionBean.authorize('V_SPO') or sessionBean.authorize('V_STA') or sessionBean.authorize('V_TDP')}" class="nav-parent">
+                        <a href="#">
+                            <i class="fa fa-lg fa-fw fa-database"></i> 
+                            <span class="menu-item-parent">Registros</span>
+                        </a>
+                        <ul>
+                            <li jsf:rendered="#{sessionBean.authorize('V_BP') or sessionBean.authorize('V_PBP') or sessionBean.authorize('V_ABP') or sessionBean.authorize('V_UOM') or sessionBean.authorize('V_FS') or sessionBean.authorize('V_CL')}" class="">
+                                <a href="#">MEF</a>
+                                <ul>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_BP')}">
+                                        <p:commandLink 
+                                            id="record_budget-program"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{budgetProgramBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Programas
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/budget_program.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{budgetProgramBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_budget-program',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_PBP')}">
+                                        <p:commandLink 
+                                            id="record_budget-product"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{productBudgetProgramBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Productos/Proyectos
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/product_budget_program.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{productBudgetProgramBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_budget-product',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_ABP')}">
+                                        <p:commandLink 
+                                            id="record_budget-activity" 
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{activityBudgetProgramBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Actividades
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/activity_budget_program.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{activityBudgetProgramBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_budget-activity',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_UOM')}">
+                                        <p:commandLink 
+                                            id="record_budget-uom" 
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{uoMBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Unidades
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/uom.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{uoMBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_budget-uom',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_FS')}">
+                                        <p:commandLink 
+                                            id="record_funding-source" 
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)"
+                                            action="#{fundingSourceBean.onLoad(true)}" update=":main">
+                                            <i class="fa fa-table"/> Ftes. Financ.
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/funding_source.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{fundingSourceBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_funding-source',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_CL')}">
+                                        <p:commandLink 
+                                            id="record_classifier" 
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true);
+                                                    begin_load()"
+                                            action="#{classifierBean.onLoad(true)}" update=":main">
+                                            <i class="fa fa-table"/> Clasificadores
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/classifier.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{classifierBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_classifier',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li jsf:rendered="#{sessionBean.authorize('V_PEI') or sessionBean.authorize('V_SA') or sessionBean.authorize('V_STO') or sessionBean.authorize('V_SPO') or sessionBean.authorize('V_STA')}" class="">
+                                <a href="#">PEI</a>
+                                <ul>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_PEI')}">
+                                        <p:commandLink 
+                                            id="record_strategic-plan"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{strategicPlanBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Planes Estr.
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/pei/strategic-plan/strategic-plan-view.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{strategicPlanBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_strategic-plan',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_SA')}">
+                                        <p:commandLink 
+                                            id="record_strategic-axis"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{strategicAxisBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Ejes Estr.
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/pei/strategic-axis/strategic-axis-view.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{strategicAxisBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_strategic-axis',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_STO')}">
+                                        <p:commandLink 
+                                            id="record_strategic-goal"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{strategicGoalBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Objetivos Estrat.
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/strategic_goal.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{strategicGoalBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_strategic-goal',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                    <li jsf:rendered="#{sessionBean.authorize('V_STA')}">
+                                        <p:commandLink 
+                                            id="record_specific-actividades"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)" 
+                                            action="#{specificActivityBean.onLoad(true)}" 
+                                            update=":main">
+                                            <i class="fa fa-table"/> Acciones estr.
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/specific_activity.xhtml" />
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{specificActivityBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:rrecord_specific-actividades',true)" />
+                                        </p:commandLink>
+                                    </li>
+                                </ul>
+                            </li>
+                            <ui:fragment rendered="#{sessionBean.authorize('V_TDP')}">
+                                <li>
+                                    <p:commandLink 
+                                        id="record_dependency" 
+                                        onstart="begin_load()"
+                                        oncomplete="end_load()"
+                                        onclick="Menu.change(this, true)"
+                                        process="@this" 
+                                        update=":main"
+                                        action="#{dependencyBean.onLoad(true)}">
+                                        <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{dependencyBean}" />
+                                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/dependency/dependency-view.xhtml" />
+                                        <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_dependency',true)" />
+                                        Dependencias
+                                    </p:commandLink>
+                                </li>
+                            </ui:fragment>
+                        </ul>
+                    </li>
+                    <ui:fragment rendered="#{(sessionBean.authorize('VO_POI') and not sessionBean.authorize('VA_POI') ) or sessionBean.authorize('VA_POI') or sessionBean.authorize('V_POU')}">
+                        <li class="nav-parent">
+                            <a href="#"><i class="fa fa-lg fa-fw fa-calendar"></i> <span class="menu-item-parent">Plan Operativo</span></a>
+                            <ul>
+                                <ui:fragment rendered="#{sessionBean.authorize('VO_POI') and not sessionBean.authorize('VA_POI')}">
+                                    <li>
+                                        <p:commandLink  
+                                            id="poi_report" 
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            onclick="Menu.change(this, true)"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{viewPOIBean.begin(sessionBean.currentDependency.id)}">
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/poi/poi_view.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:poi_report',true)" />
+                                            Informes y estado
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment> 
+                                <ui:fragment rendered="#{sessionBean.authorize('VA_POI')}">
+                                    <li>
+                                        <p:commandLink  
+                                            id="poi_report_all" 
+                                            onclick="Menu.change(this, true)"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{poiBean.refresh()}">
+                                            <f:setPropertyActionListener target="#{poiBean.selected}" value="#{null}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/poi/poi_all.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:poi_report_all',true)" />
+                                            Informes y estado
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment> 
+                                <ui:fragment rendered="#{sessionBean.authorize('V_POU')}">
+                                    <li>
+                                        <p:commandLink 
+                                            id="record_poi_unity" 
+                                            onclick="Menu.change(this, true)"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{poiUnityBean.onLoad(true)}">
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{poiUnityBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/poi_unity.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_poi_unity',true)" />
+                                            Unidad POI
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                            </ul>
+                        </li>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{(sessionBean.authorize('MO_BN') and not sessionBean.authorize('MA_BN')) or sessionBean.authorize('MA_BN') or sessionBean.authorize('V_NI')}">
+                        <li class="nav-parent">
+                            <a href="#"><i class="fa fa-lg fa-fw fa-cubes"></i> <span class="menu-item-parent">Cuadro de nec.</span></a>
+                            <ul>
+                                <ui:fragment rendered="#{sessionBean.authorize('MO_BN') and not sessionBean.authorize('MA_BN')}">
+                                    <li>
+                                        <p:commandLink 
+                                            onclick="Menu.change(this, true)"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{viewBNeedBean.begin(sessionBean.currentDependency.id)}">
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{viewBNeedBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/box_need/box_need_view.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_poi_unity',true)" />
+                                            Informes y estado
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{sessionBean.authorize('MA_BN')}">
+                                    <li>
+                                        <p:commandLink 
+                                            onclick="Menu.change(this, true)"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{boxNeedBean.refresh()}">
+                                            <f:setPropertyActionListener target="#{boxNeedBean.selected}" value="#{null}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/box_need/box_need_all.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_poi_unity',true)" />
+                                            Informes y estado
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{sessionBean.authorize('V_NI')}">
+                                    <li>
+                                        <p:commandLink 
+                                            onclick="Menu.change(this, true)"
+                                            onstart="begin_load()"
+                                            oncomplete="end_load()"
+                                            process="@this" 
+                                            update=":main"
+                                            action="#{necessaryItemBean.onLoad(true)}">
+                                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedNecessaryItemBean}" />
+                                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/necessary_item.xhtml" />
+                                            <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:record_dependency',true)" />
+                                            Items
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                            </ul>
+                        </li>
+                    </ui:fragment>
+                    <li class="nav-parent">
+                        <a href="#"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">Seguridad</span></a>
+                        <ul>
+                            <ui:fragment rendered="#{sessionBean.authorize('V_USR')}">
+                                <li>
+                                    <p:commandLink  
+                                        id="security_user" 
+                                        onstart="begin_load()"
+                                        oncomplete="end_load()"
+                                        onclick="Menu.change(this, true)"
+                                        process="@this" 
+                                        update=":main"
+                                        action="#{userBean.onLoad(true)}">
+                                        <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{userBean}" />
+                                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/user.xhtml" />
+                                        <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:security_user',true)" />
+                                        Usuarios
+                                    </p:commandLink>
+                                </li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{sessionBean.authorize('V_USR')}">
+                                <li>
+                                    <p:commandLink  
+                                        id="security_rol" 
+                                        onstart="begin_load()"
+                                        oncomplete="end_load()"
+                                        onclick="Menu.change(this, true)"
+                                        process="@this" 
+                                        update=":main"
+                                        action="#{rolBean.onLoad(true)}">
+                                        <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{rolBean}" />
+                                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/rol.xhtml" />
+                                        <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:security_rol',true)" />
+                                        Roles
+                                    </p:commandLink>
+                                </li>
+                            </ui:fragment>
+                            <li>
+                                <p:commandLink  
+                                    id="security_profile" 
+                                    onstart="begin_load()"
+                                    oncomplete="end_load()"
+                                    onclick="Menu.change(this, true)"
+                                    process="@this" 
+                                    update=":main"
+                                    action="#{profileBean.onLoad(true)}">
+                                    <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{profileBean}" />
+                                    <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/profile.xhtml" />
+                                    <f:setPropertyActionListener target="#{navigationBean.javascriptMenu}" value="Menu.change('#form-nav-menu\\\\:security_rol',true)" />
+                                    Mi Perfil
+                                </p:commandLink>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <span class="minifyme" data-action="minifyMenu"> 
+                <i class="fa fa-arrow-circle-left hit"></i> 
+            </span>
+        </aside>
+    </h:form>
+</ui:composition>

@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/rol.man.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Seguridad</li><li>Rol</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Seguridad
+                        <span>&gt;  
+                            #{managedStrategicAxisBean.selected.id eq null ? 'Creando rol' : 'Editando rol'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:Rol.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:Rol.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-white"></i> 
+                                </span>
+                                <h2>Informaci&oacute;n</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                            <div role="content">
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <h:form id="form">
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Código</label>
+                                                <div class="col-md-3"> 
+                                                    <h:inputText id="code" value="#{managedRolBean.code}" styleClass="form-control">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese codigo" />
+                                                        <f:passThroughAttribute name="autofocus" value="true" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Cargo</label>
+                                                <div class="col-md-10">
+                                                    <h:inputText id="name" value="#{managedRolBean.name}" styleClass="form-control">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese cargo" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10 col-md-offset-2">
+                                                    <label class="checkbox-inline">
+                                                        <h:selectBooleanCheckbox value="#{managedRolBean.createAgain}" id="create-again" styleClass="checkbox" />
+                                                        <span>Crear nuevo al terminar</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <p:remoteCommand 
+                                                name="save" 
+                                                update=":main" 
+                                                process="@form" action="#{managedRolBean.doSave('/pages/security/rol.xhtml', rolBean)}" />
+                                            <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{rolBean.onLoad(true)}">
+                                                <f:setPropertyActionListener value="/pages/security/rol.xhtml" target="#{navigationBean.content}" />
+                                                <f:setPropertyActionListener value="#{rolBean}" target="#{sessionBean.loadable}" />
+                                            </p:commandLink>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <div class="jarviswidget jarviswidget-color-blueLight" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-file txt-color-darken"></i> 
+                                </span>
+                                <h2>Permisos</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                            <div role="content">
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <h:form id="form-permission">
+                                            <p:remoteCommand name="savePermission" process="@form" oncomplete="save()"/>
+                                            <script>
+                                                $(function () {
+                                                    $(".permission-ck").on("change", function () {
+                                                        if (this.checked) {
+                                                            $(this).closest("tr").addClass("highlight");
+                                                        } else {
+                                                            $(this).closest("tr").removeClass("highlight");
+                                                        }
+                                                    }).trigger("change").closest("tr").on("click", function () {
+                                                        $(this).find(".permission-ck").trigger("click");
+                                                    });
+                                                });
+                                            </script>
+                                            <table id="inbox-table" class="table table-hover table-striped table-forum">
+                                                <tbody>
+                                                    <ui:repeat value="#{managedRolBean.permissionSearcher.categories}" var="category" varStatus="st">
+
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa #{category.icon} fa-2x text-muted"></i></td>
+                                                            <td colspan="2">
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        #{category.name}
+                                                                    </a>
+                                                                    <small>#{category.summary}</small>
+                                                                </h4>
+                                                            </td>
+                                                        </tr>
+                                                        <ui:repeat value="#{managedRolBean.permissionSearcher.permissions[category.id]}" var="item">
+                                                            <tr>
+                                                                <td class="text-center" style="width: 40px;"></td>
+                                                                <td >#{item.name}</td>
+                                                                <td style="width: 40px;">
+                                                                    <label class="checkbox">
+                                                                        <h:selectBooleanCheckbox  value="#{managedRolBean.permissionSearcher.selecteds[item]}"  styleClass="checkbox permission-ck" />
+                                                                        <span>&nbsp;</span>
+                                                                    </label>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </ui:repeat>
+                                                    <ui:fragment rendered="#{not empty managedRolBean.permissionSearcher.permissionNoCategory }">
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-globe fa-2x text-muted"></i></td>
+                                                            <td colspan="2">
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Otros
+                                                                    </a>
+                                                                    <small>Otras funcionalidades a realizar</small>
+                                                                </h4>
+                                                            </td>
+                                                        </tr>
+                                                        <ui:repeat value="#{managedRolBean.permissionSearcher.permissionNoCategory}" var="item">
+                                                            <tr>
+                                                                <td class="text-center" style="width: 40px;"></td>
+                                                                <td >#{item.name}</td>
+                                                                <td style="width: 40px;">
+                                                                    <label class="checkbox">
+                                                                        <h:selectBooleanCheckbox  value="#{managedRolBean.permissionSearcher.selecteds[item]}"  styleClass="checkbox permission-ck" />
+                                                                        <span>&nbsp;</span>
+                                                                    </label>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </ui:fragment>
+                                                </tbody>
+                                            </table>
+                                        </h:form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+</ui:composition>

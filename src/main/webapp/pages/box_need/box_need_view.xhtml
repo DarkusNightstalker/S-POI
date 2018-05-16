@@ -1,0 +1,758 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/box_needs.js"/>
+    <script src="#{request.contextPath}/js/pages/report_view.js"/>
+
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh"  rel="tooltip" data-placement="bottom" data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Operaciones</li><li>Cuadro de Necesidades</li>
+        </ol>
+
+    </div>
+
+    <div id="content">
+
+        <div class="inbox-nav-bar no-content-padding">
+
+            <h1 class="page-title txt-color-blueDark w animated fadeInDown fast" style="width: auto"><strong>Cuadro de necesidades</strong>&nbsp;#{sessionBean.operationYear}&nbsp;&nbsp;&nbsp;
+            </h1>
+
+            <div class="inbox-checkbox-triggered">
+                <h:form>
+                    <div class="btn-group">
+                        <p:commandLink process="@this" update=":manage-wrapper" styleClass="btn btn-default" oncomplete="$('#modal-manage').modal()" action="#{managedBNeItem.create()}">
+                            <strong><i class="fa fa-plus fa-lg text-success"></i></strong>
+                        </p:commandLink>
+                        <p:commandLink styleClass="deletebutton btn btn-default">
+                            <strong><i class="fa fa-check fa-lg text-info"></i></strong>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+
+
+
+
+            <a href="javascript:void(0);" id="compose-mail-mini" class="btn btn-primary pull-right hidden-desktop visible-tablet"> <strong><i class="fa fa-file fa-lg"></i></strong> </a>
+
+            <span class="pull-right"></span>
+
+        </div>
+
+        <div id="inbox-content" class="inbox-body no-content-padding animated fast fadeInRight">
+
+            <div class="table-wrap custom-scroll" style="margin-left: 0px">
+                <table class="table eg-1">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h3>Información Basica</h3>
+                                <p><strong>Dependencia : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{viewBNeedBean.currentDependency.name}</p>
+
+                            </td>
+                        </tr>
+                        <tr id="auditory">
+                            <td>
+                                <h3>Actividades <button type="button" onclick="if ($(this).hasClass('active')) {
+                                            $(this).removeClass('active');
+                                        } else {
+                                            $(this).addClass('active');
+                                        }
+                                        $('#filter-summary').toggle('fast');
+                                        $('#filter-act').toggle('fast')" class="btn btn-xs btn-primary"><i class="fa fa-filter"/></button>
+                                    <button type="button" onclick="refresh()" class="btn btn-xs btn-warning"><i class="fa fa-refresh"/></button></h3>
+
+                                <h:form id="filter-act" style="display: none;padding: 10px" styleClass="form-horizontal well well-lg">
+                                    <p:remoteCommand name="refresh" process="@this" action="#{viewBNeedBean.refresh()}" update=":filter-act,:form-table" />
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-1">Fte. fto.</label>
+                                        <div class="col-md-11">
+                                            <script>
+                                                $(function () {
+                                                    $("#filter-act\\:filter-3").select2({
+                                                        placeholder: 'Todas las fuentes de financiamiento',
+                                                        width: '100%',
+                                                        allowClear: true
+                                                    });
+                                                })
+                                            </script>
+                                            <h:selectOneMenu id="filter-3" value="#{viewBNeedBean.fundingSource}">
+                                                <f:selectItem/>
+                                                <f:selectItems value="#{viewBNeedBean.fundingSourceSearcher.data}" var="item" itemLabel="#{item[2]}" itemValue="#{item[0]}" />
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-1">Actividad</label>
+                                        <div class="col-md-11">
+                                            <script>
+                                                $(function () {
+                                                    $("#filter-act\\:filter-5").select2({
+                                                        placeholder: 'Todas las actividades',
+                                                        width: '100%'
+                                                    });
+                                                })
+                                            </script>
+                                            <h:selectOneMenu id="filter-5">
+                                                <f:selectItem/>
+                                            </h:selectOneMenu>
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-1">Producto</label>
+                                        <div class="col-md-5">
+                                            <h:inputText styleClass="form-control" value="#{viewBNeedBean.product}">
+
+                                            </h:inputText>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <p:commandLink styleClass="btn btn-sm btn-primary" onstart="begin_load()" oncomplete="end_load()" action="#{viewBNeedBean.updateItems()}"  process="@form" update=":form-table" >
+                                                <i class="fa fa-search"/> Buscar
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+                                </h:form>
+                                <div class="form-horizontal" id="filter-summary">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <p class="form-control-static">Ningun Filtro</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row padding-left-lg">
+                                    <h:form id="form-table">
+                                        <p:remoteCommand name="del"  action="#{managedBNeItem.delete(viewBNeedBean.selectedId)}" 
+                                                         oncomplete="end_load();update()" 
+                                                         onstart="begin_load()" />
+                                        <p:remoteCommand name="update" update=":form-table"  action="#{viewBNeedBean.updateItems()}"  
+                                                         oncomplete="end_load()" 
+                                                         onstart="begin_load()"/>
+                                        <p:remoteCommand name="recovery" action="#{managedBNeItem.recovery(viewBNeedBean.selectedId)}"  oncomplete="update()" update=":form-table" />
+
+
+                                        <div class="table-responsive">
+                                            <script>
+                                                $(function () {
+                                                    $("#datatable tbody").on("click", "button.btn-expand", function () {
+                                                        var tr = $(this).closest("tr").next("tr")
+                                                        if (tr.css("display") == "none") {
+                                                            $(this).find("i").removeClass("fa-plus").addClass("fa-minus");
+                                                            $(this).removeClass("btn-success").addClass("btn-danger");
+                                                        } else {
+                                                            $(this).find("i").addClass("fa-plus").removeClass("fa-minus");
+                                                            $(this).removeClass("btn-danger").addClass("btn-success");
+
+                                                        }
+                                                        tr.toggle("fast");
+                                                    });
+                                                    $(".pei-label").removeClass("ui-commandlink ui-widget");
+                                                });
+                                            </script>
+                                            <div class="dataTables_wrapper form-inline no-footer">
+                                                <ui:include src="/layout/pagination_header.xhtml">
+                                                    <ui:param name="pagination" value="#{viewBNeedBean.pagination}"/>
+                                                    <ui:param name="order_factory" value="#{viewBNeedBean.orderFactory}"/>
+                                                    <ui:param name="update_script" value="update()"/>
+                                                </ui:include>
+                                                <table id="datatable" class="table table-striped table-condensed table-bordered table-hover table-forum">
+                                                    <thead>
+                                                        <tr>
+                                                            <td style="width: 40px;min-width: 40px;max-width: 40px"></td>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{viewBNeedBean.orderFactory}" />
+                                                                <ui:param name="label" value="Cod. Prod." />
+                                                                <ui:param name="field" value="productCode" />
+                                                                <ui:param name="class" value="col-md-3 text-center" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{viewBNeedBean.orderFactory}" />
+                                                                <ui:param name="label" value="Producto" />
+                                                                <ui:param name="field" value="productName" />
+                                                                <ui:param name="class" value="col-md-6 col-sm-4 col-xs-5" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{viewBNeedBean.orderFactory}" />
+                                                                <ui:param name="label" value="Fte. finc." />
+                                                                <ui:param name="field" value="fs.code" />
+                                                                <ui:param name="class" value="col-md-2 text-center" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{viewBNeedBean.orderFactory}" />
+                                                                <ui:param name="label" value="Act." />
+                                                                <ui:param name="field" value="poia.code" />
+                                                                <ui:param name="class" value="col-md-2 text-center" />
+                                                            </ui:include>
+                                                            <ui:include src="/layout/sorter.xhtml">
+                                                                <ui:param name="javascript_method" value="changeOrder" />
+                                                                <ui:param name="order" value="#{viewBNeedBean.orderFactory}" />
+                                                                <ui:param name="label" value="Prec unit" />
+                                                                <ui:param name="field" value="unitPrice" />
+                                                                <ui:param name="class" value="text-center" />
+                                                                <ui:param name="style" value="width: 100px;min-width: 100px;max-width: 100px;" />
+                                                            </ui:include>
+                                                            <td class="text-center " style="width: 70px;vertical-align: middle;"><strong>Cantidad</strong></td>
+                                                            <td class="text-center " style="width: 100px;min-width: 100px;max-width: 100px;vertical-align: middle;"><strong>Prec. total</strong></td>
+                                                            <td style="width: 100px;min-width: 100px;max-width: 100px"></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{viewBNeedBean.pagination.data}" var="item">
+                                                            <tr class="#{item[12] ? '' : 'danger'}">
+                                                                <td><button type="button" class="btn btn-expand btn-xs btn-success"><i class="fa fa-plus"/></button></td>
+                                                                <td style="vertical-align: middle !important" class="text-center">#{item[6]}</td >
+                                                                <td class="font-sm" style="vertical-align: middle !important">#{item[7]}</td>
+                                                                <td style="vertical-align: middle !important" class="text-center"><p:commandLink>#{item[4]} <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                <td style="vertical-align: middle !important" class="text-center"><p:commandLink>#{item[2]} <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                <td style="vertical-align: middle !important" class="text-right">S/. <h:outputText value="#{item[10]}"><f:convertNumber maxFractionDigits="2" minFractionDigits="2"/> </h:outputText></td>
+                                                                <td style="vertical-align: middle !important" class="text-center">#{item[11]}</td>
+                                                                <td style="vertical-align: middle !important" class="text-center">S/. <h:outputText value="#{item[11] * item[10]}"><f:convertNumber maxFractionDigits="2" minFractionDigits="2"/> </h:outputText></td>
+                                                                <td style="vertical-align: middle !important" class="text-center">
+                                                                    <div class="btn-group">
+                                                                        <p:commandLink rendered="#{item[12]}" onclick="$(this).blur()" process="@this" update=":manage-wrapper" oncomplete="$('#modal-manage').modal()"   styleClass="btn btn-warning btn-xs">
+                                                                            <i class="fa fa-edit"></i>
+                                                                            <f:setPropertyActionListener target="#{managedBNeItem.idSelected}" value="#{item[0]}" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink rendered="#{item[12]}"  onclick="$(this).blur()" process="@this" styleClass="btn btn-danger btn-xs" 
+                                                                                       oncomplete="BoxNeeds.delete();end_load()" 
+                                                                                       onstart="begin_load()">
+                                                                            <i class="fa fa-trash-o"></i>
+                                                                            <f:setPropertyActionListener target="#{viewBNeedBean.selectedId}" value="#{item[0]}" />
+                                                                        </p:commandLink>
+                                                                        <p:commandLink rendered="#{not item[12]}"  onclick="$(this).blur()" process="@this" styleClass="btn btn-success btn-xs" 
+                                                                                       oncomplete="BoxNeeds.recovery();end_load();" 
+                                                                                       onstart="begin_load()">
+                                                                            <f:setPropertyActionListener target="#{viewBNeedBean.selectedId}" value="#{item[0]}" />
+                                                                            Restaurar
+                                                                        </p:commandLink>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr style="display: none">
+                                                                <td style="background: rgb(249, 249, 249)" ></td>
+                                                                <td colspan="8"> 
+                                                                    <table class="table table-forum">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td class="text-center" style="width: 40px;"><i class="fa fa-calendar fa-2x text-muted"></i></td>
+                                                                                <td colspan="3" >
+                                                                                    <h4>
+                                                                                        <a href="javascript:void(0)">
+                                                                                            Cronograma
+                                                                                        </a>
+                                                                                        <small>a travez de los meses</small>
+                                                                                    </h4>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="4" >                                                      
+                                                                                    <table class="table table-condensed table-hover" style="
+                                                                                           margin-bottom: 0px;
+                                                                                           ">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <ui:repeat value="#{viewBNeedBean.months}" var="m">
+                                                                                                    <th  class="text-center col-xs-1">
+                                                                                                        <h:outputText value="#{m.abbr}" escape="false"></h:outputText> 
+                                                                                                    </th>
+                                                                                                </ui:repeat>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <ui:repeat value="#{viewBNeedBean.months}" var="m">
+                                                                                                    <td class="text-center">
+                                                                                                        <h:outputText value="#{item[13][m]}" escape="false"></h:outputText> 
+                                                                                                    </td>
+                                                                                                </ui:repeat>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td class="text-center" style="width: 40px;"><i class="fa fa-tasks fa-2x text-muted"></i></td>
+                                                                                <td class="col-md-12" colspan="3">
+                                                                                    <h4>
+                                                                                        <a href="javascript:void(0)">
+                                                                                            Actividad
+                                                                                        </a>
+                                                                                        <small>Datos de la actividad de la necesidad</small>
+                                                                                    </h4>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="4" >                                                      
+                                                                                    <table class="table table-condensed table-hover" style="
+                                                                                           margin-bottom: 0px;
+                                                                                           ">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td class="text-right"  style="width: 145px;" >
+                                                                                                    <strong> Codigo: </strong>
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    #{item[2]}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td class="text-right" style="width: 145px;" >
+                                                                                                    <strong> Nombre : </strong>
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    #{item[3]}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td class="text-center" style="width: 40px;"><i class="fa fa-tags fa-2x text-muted"></i></td>
+                                                                                <td class="col-md-6">
+                                                                                    <h4>
+                                                                                        <a href="javascript:void(0)">
+                                                                                            Producto
+                                                                                        </a>
+                                                                                        <small>Datos y clasificador de gasto</small>
+                                                                                    </h4>
+                                                                                </td>
+                                                                                <td class="text-center" style="width: 40px;"><i class="fa fa-dollar fa-2x text-muted"></i></td>
+                                                                                <td class="col-md-6">
+                                                                                    <h4>
+                                                                                        <a href="javascript:void(0)">
+                                                                                            Fuente de Financiamiento
+                                                                                        </a>
+                                                                                        <small>Datos</small>
+                                                                                    </h4>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="2" >                                                      
+                                                                                    <table class="table table-condensed table-hover" style="
+                                                                                           margin-bottom: 0px;
+                                                                                           ">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td class="text-right"  style="width: 145px;" >
+                                                                                                    <strong> Nombre Producto : </strong>
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    #{item[7]} <span class="font-xs"><strong>(#{item[6]})</strong></span>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td class="text-right" style="width: 145px;" >
+                                                                                                    <strong> Unidad de medida : </strong>
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    Ml.
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td class="text-right"  style="width: 165px;" >
+                                                                                                    <strong> Clasificador de gasto : </strong> 
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    #{item[9]} <small class="font-xs"><strong>(#{item[8]})</strong></small>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                                <td colspan="2" >                                                      
+                                                                                    <table class="table table-condensed table-hover" style="
+                                                                                           margin-bottom: 0px;
+                                                                                           ">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td style="width: 145px;" >
+                                                                                                    <strong> Nombre :</strong>
+                                                                                                </td>
+                                                                                                <td  class="text-left">
+                                                                                                    #{item[5]} <span class="font-xs"><strong>(#{item[4]})</strong></span>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                    <ui:fragment rendered="#{empty viewBNeedBean.pagination.data}">
+                                                        <tfoot>
+                                                            <tr class="text-muted">
+                                                                <td colspan="9">
+                                                                    <h3>Ningúna necesidad registrada</h3>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </ui:fragment>
+                                                </table>
+                                                <ui:include src="/layout/pagination_footer.xhtml">
+                                                    <ui:param name="pagination" value="#{viewBNeedBean.pagination}"/>
+                                                </ui:include>                                                
+                                            </div>
+                                        </div>
+
+                                    </h:form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h3>Descargas</h3>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <a href="javascript:$('#modal-download').modal()" class="btn btn-primary">
+                                            <span class="fa fa-download"/> Descargar Informe
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="modal fade" id="modal-download" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar programas presupuestales</h4>
+                </div>
+                <h:form id="report-form" styleClass="form-horizontal">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Reporte</label>
+                                <div class="col-md-10">
+                                    <script>
+                                        $(function () {
+                                            $("#report-form\\:report").select2({
+                                                placeholder: "Seleccione un reporte",
+                                                width: "100%"
+                                            })
+                                        });
+                                    </script>
+                                    <h:selectOneMenu id="report" value="#{viewBNeedBean.report.selectedCode}">
+                                        <f:selectItem/>
+                                        <f:selectItems value="#{viewBNeedBean.report.staticReports}" var="r" itemValue="#{r.code}" itemLabel="#{r.name}"/>
+                                        <p:ajax process="report" event="change" update="report-form:parameters-wrapper"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                            <h:panelGroup layout="block" id="parameters-wrapper">
+                                <ui:fragment rendered="#{viewBNeedBean.report.selected ne null}">
+                                    <ui:repeat value="#{viewBNeedBean.report.selected.parameters}" var="parameter" >
+                                        <h:outputText value="#{parameter.makeHtml()}" escape="false"/>
+                                    </ui:repeat>
+                                </ui:fragment>
+                            </h:panelGroup>
+                            <a onclick="ReportView.report(this, 'XLSX', 'bg-color-green', 'txt-color-green')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                MS Excel
+                            </a>
+                            <a onclick="ReportView.report(this, 'PDF', 'bg-color-red', 'txt-color-red')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                PDF
+                            </a>
+                            <a  onclick="ReportView.report(this, 'DOCX', 'bg-color-blue', 'txt-color-blue')"  style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                MS Word
+                            </a>
+                            <a onclick="ReportView.report(this, 'HTML', 'bg-color-purple', 'txt-color-purple')" style="width: 24%" class="btn btn-default btn-lg">
+                                <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                                <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                                HTML
+                            </a>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        </div>
+                        <h:inputHidden id="content-type" value="#{viewBNeedBean.report.contentType}" />>
+                        <h:inputHidden id="parameters" value="#{viewBNeedBean.report.parameters}" />
+                        <p:commandLink id="download-rp" ajax="false"  styleClass="hidden" action="#{viewBNeedBean.report.execute()}" process="@form"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"  class="btn btn-primary" onclick="ReportView.download()" >
+                            Descargar
+                        </button>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-manage">
+        <div class="modal-dialog modal-lg" style="
+             width: 1100px;
+             ">
+            <h:panelGroup id="manage-wrapper" layout="block" styleClass="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa #{managedBNeItem.selected.id eq null ? 'fa-plus' : 'fa-edit'}"/> #{managedBNeItem.selected.id eq null ? 'Creando Registro' : 'Editando Registro'}</h4>
+                </div>
+                <h:form id="form-manage" styleClass="form-horizontal">
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-lg-2 col-md-3 control-label">Actividad</label>
+                                <h:panelGroup id="poi-activity-wrapper" layout="block" class="col-lg-10 col-md-9">
+                                    <ui:fragment rendered="#{not empty managedBNeItem.poiActivitySearcher.data}">
+                                        <script>
+                                            $(function () {
+                                                $("#form-manage\\:specific-activity").select2({
+                                                    width: "100%",
+                                                    placeholder: "Seleccione una actividad"
+                                                })
+                                            })
+                                        </script>
+                                        <h:selectOneMenu value="#{managedBNeItem.poiActivitySearcher.selected}" id="specific-activity">
+                                            <f:selectItem/>
+                                            <f:selectItems 
+                                                value="#{managedBNeItem.poiActivitySearcher.data}" 
+                                                var="item" 
+                                                itemLabel="#{item[1]}" itemValue="#{item[0]}" />
+                                            <p:ajax event="change" listener="#{managedBNeItem.changePOIFunding()}" process="specific-activity" update="form-manage:bc-wrapper" />
+                                        </h:selectOneMenu>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{empty managedBNeItem.poiActivitySearcher.data}">
+                                        <p class="form-control-static"><span class="label label-danger">No se ha registrado ninguna actividad en el POI Actual</span></p>
+                                    </ui:fragment>
+                                </h:panelGroup>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 col-md-3 control-label">Fte Financ.</label>
+                                <div class="col-lg-10 col-md-9">
+                                    <script>
+                                        $(function () {
+                                            $("#form-manage\\:funding-source").select2({
+                                                width: "100%",
+                                                placeholder: "Seleccione una fuente de financiamiento"
+                                            })
+                                        })
+                                    </script>
+                                    <h:selectOneMenu value="#{managedBNeItem.fundingSourceSearcher.selected}" id="funding-source">
+                                        <f:selectItem/>
+                                        <f:selectItems 
+                                            value="#{managedBNeItem.fundingSourceSearcher.data}" 
+                                            var="item" 
+                                            itemLabel="#{item[2]}" itemValue="#{item[0]}" />
+                                        <p:ajax event="change" listener="#{managedBNeItem.changePOIFunding()}" process="funding-source" update="form-manage:bc-wrapper" />
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                            <h:panelGroup id="item-amount-wrapper" layout="block" styleClass="form-group">
+                                <div class="col-md-6">
+                                    <div class="well">
+                                        <h3><span class="fa fa-cubes"></span>Item de necesidad</h3>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-md-4 control-label">Generica de Gasto</label>
+                                            <div class="col-lg-9 col-md-8">
+                                                <script>
+                                                    $(function () {
+                                                        $("#form-manage\\:classifier").select2({
+                                                            width: "100%",
+                                                            placeholder: "Seleccione un clasificador"
+                                                        })
+                                                    })
+                                                </script>
+                                                <h:selectOneMenu value="#{managedBNeItem.genericClassifierSearcher.selected}" id="classifier">
+                                                    <f:selectItem/>
+                                                    <f:selectItems 
+                                                        value="#{managedBNeItem.genericClassifierSearcher.data}" 
+                                                        var="item" 
+                                                        itemLabel="#{item[2]}" itemValue="#{item[1]}" />
+                                                    <p:ajax event="change" process="classifier" listener="#{managedBNeItem.genericClassifierSearcher.changedGeneric()}" update="form-manage:item-wrapper,form-manage:price-wrapper,form-manage:it-wrapper,form-manage:bc-wrapper" />
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <h:panelGroup id="item-wrapper" layout="block" styleClass="form-group">
+                                            <label class="col-lg-3 col-md-4 control-label">Objeto</label>
+                                            <div class="col-lg-9 col-md-8">
+                                                <script>
+                                                    $(function () {
+                                                        $("#form-manage\\:filter-item").on("keypress", function (event) {
+                                                            if (event.charCode == 13) {
+                                                                filter_items();
+                                                                return false;
+                                                            }
+                                                        });
+                                                    })
+                                                </script>
+                                                <h:inputText id="filter-item" value="#{managedBNeItem.necessaryItemSearcher.filter}" styleClass="form-control" />
+                                                <p:remoteCommand 
+                                                    name="filter_items" 
+                                                    action="#{managedBNeItem.necessaryItemSearcher.filterItems()}" 
+                                                    process="@this,filter-item"
+                                                    update="form-manage:item-w,form-manage:info-classifier,form-manage:price-wrapper,form-manage:it-wrapper"/>
+<!--                                    <h:selectOneMenu value="#{managedBNeItem.necessaryItemSearcher.selected}" id="specific-classifier">
+                                                   
+                                                    <p:ajax event="change" process="specific-classifier" listener="" update="form-manage:item-w,form-manage:info-classifier,form-manage:price-wrapper,form-manage:it-wrapper" />
+                                                </h:selectOneMenu>-->
+                                                <h:panelGroup id="item-w" layout="block">
+                                                    <script>
+                                                        $(function () {
+                                                            if ($("#form-manage\\:item").val() === null) {
+                                                                $(".month-schedule").prop("disabled", true);
+                                                                $(".month-schedule").first().trigger('input');
+                                                            }
+                                                        })
+                                                    </script>
+                                                    <h:selectOneListbox value="#{managedBNeItem.necessaryItemSearcher.selected}" id="item" class="form-control" size="7">
+                                                        <f:selectItems 
+                                                            value="#{managedBNeItem.necessaryItemSearcher.data}" 
+                                                            var="item" 
+                                                            itemLabel="#{item[2]}" itemValue="#{item[0]}" />
+                                                        <p:ajax event="change" listener="#{managedBNeItem.necessaryItemSearcher.changedItem()}" process="item" update="form-manage:price-wrapper,form-manage:it-wrapper,form-manage:info-classifier" oncomplete="$('.month-schedule').prop('disabled',false);$('.month-schedule').first().trigger('input')" />
+                                                    </h:selectOneListbox>
+                                                </h:panelGroup>
+                                                <span style="font-size: 10px" class=" text-muted">
+                                                    <h:outputText id="info-classifier" value="#{managedBNeItem.necessaryItemSearcher.classifierInfo}" escape="false"></h:outputText></span>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="well">
+                                        <h3> <span class="fa fa-calendar"></span> Asignacion</h3>
+                                        <script>
+                                            $(function () {
+                                                BoxNeeds.configureAmount();
+                                                $(".month-schedule").first().trigger("input");
+                                            })
+                                        </script>
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-md-4 control-label">Prod.</label>
+                                            <h:panelGroup id="it-wrapper" layout="block" class="col-lg-9 col-md-8">
+                                                <ui:fragment rendered="#{managedBNeItem.necessaryItem eq null}">
+                                                    <p class="form-control-static text-muted">Sin especificar</p>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{managedBNeItem.necessaryItem ne null}">
+                                                    <p class="form-control-static text-muted font-sm">
+                                                        #{managedBNeItem.necessaryItem.name} <br/>
+
+                                                        x #{managedBNeItem.necessaryItem.uom}
+                                                    </p>
+                                                </ui:fragment>
+                                            </h:panelGroup>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-3 col-md-4 control-label">P. unit.</label>
+                                            <h:panelGroup id="price-wrapper" layout="block" class="col-lg-9 col-md-8">
+                                                <ui:fragment rendered="#{managedBNeItem.necessaryItem eq null}">
+                                                    <p class="form-control-static text-muted">Sin especificar</p>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{managedBNeItem.necessaryItem ne null}">
+                                                    <p class="form-control-static text-muted">
+                                                        S/. <h:outputText value="#{managedBNeItem.priceItem}">
+                                                            <f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+                                                        </h:outputText></p>
+                                                    <input type="hidden" id="form-manage:unit-price" value="#{managedBNeItem.priceItem}"/>
+                                                </ui:fragment>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="form-group">
+                                            <ui:repeat value="#{managedBNeItem.months}" var="month">
+                                                <div class="input-group pull-left" style=" padding: 4px; width: 50%">
+                                                    <span style="width: 97px;" class="input-group-addon">#{month}</span>
+                                                    <h:inputText styleClass="form-control month-schedule" value="#{managedBNeItem.schedules[month].quantity}">
+
+                                                    </h:inputText>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                        <button type="button" onclick="$('.month-schedule').val('').first().trigger('input')" class="btn btn-warning btn-block">
+                                            <i class="glyphicon glyphicon-refresh"></i> Limpiar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <h:panelGroup id="bc-wrapper" layout="block" class="form-group">
+                                        <label class="control-label text-center col-md-12">Saldo Actual</label>
+                                        <div class="col-md-12 text-center">
+                                            <p class="form-control-static text-success font-lg">
+                                                <ui:fragment rendered="#{managedBNeItem.budgetCeiling ne null}">
+                                                    S/. <h:outputText value="#{managedBNeItem.currentBalance}">
+                                                        <f:convertNumber pattern="##,##0.00" maxFractionDigits="2" minFractionDigits="2"/>
+                                                    </h:outputText> 
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{managedBNeItem.budgetCeiling eq null}">
+                                                    Articulo sin especificar
+                                                </ui:fragment>
+                                            </p>
+                                            <input type="hidden" id="current-balance" value="#{managedBNeItem.currentBalance}"/>
+                                        </div>
+                                    </h:panelGroup>
+                                    <div class="form-group">
+                                        <label class="control-label text-center col-md-12">Saldo Usado</label>
+                                        <div class="col-md-12 text-center">
+                                            <p id="used-balance" class="form-control-static text-sucess font-lg">S/. 0.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label text-center col-md-12">Saldo Restante</label>
+                                        <div class="col-md-12 text-center">
+                                            <p id="remaining-balance" class="form-control-static text-sucess font-lg">S/. 0.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group text-center">
+                                        <button type="button" id="btn-manage-save" onclick="BoxNeeds.save()"  style="margin-left: 15px" class="btn btn-lg btn-primary" >
+                                            <i class="fa fa-save"/>  &nbsp;Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <label class="checkbox-inline pull-left">
+                            <h:selectBooleanCheckbox disabled="#{managedBNeItem.selected.id ne null}" value="#{managedBNeItem.createAgain}"  id="create-again" styleClass="checkbox" />
+                            <span>Crear nuevo al terminar</span>
+                        </label>
+                        <p:remoteCommand name="save" update=":form-table,:manage-wrapper" oncomplete="BoxNeeds.end_save()" action="#{managedBNeItem.doSave(null, null)}"/>
+
+                    </div>
+                </h:form>
+            </h:panelGroup><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</ui:composition>
+

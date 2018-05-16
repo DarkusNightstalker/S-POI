@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boxneed_functional_programmatic" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="45aa8a27-e4c8-40e1-bbc7-6eede1c8be5b">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="java.text.SimpleDateFormat"/>
+	<import value="java.util.Date"/>
+	<style name="padd" pattern="">
+		<box leftPadding="3" rightPadding="3"/>
+	</style>
+	<subDataset name="dependency_data" uuid="0076bd8c-5b07-459a-a3aa-23d2ca02295b">
+		<parameter name="id_dependency" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select
+	p.path as parent_code,
+	p.name as parent_name,
+	d.path as dependency_code,
+	d.name as dependency_name
+from
+	dependency d
+	left join dependency p on
+	d.id_parent = p.id
+WHERE  d.id = $P{id_dependency}]]>
+		</queryString>
+		<field name="parent_code" class="java.lang.String"/>
+		<field name="parent_name" class="java.lang.String"/>
+		<field name="dependency_code" class="java.lang.String"/>
+		<field name="dependency_name" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_dependency" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PERIODICITY-H" class="java.lang.Object"/>
+	<parameter name="PERIODICITY-VALUE" class="java.lang.Object"/>
+	<parameter name="UNAS" class="java.io.InputStream"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT ON (fs.code,c.path,bi.product_code)
+	fs.id	     as funding_source_id,
+	fs.code      as funding_source_code,
+	fs.name      as funding_source_name,
+	c.id         as generic_classifier_id,
+	c.path       as generic_classifier_path,
+	c.name       as generic_classifier_name,
+	bi.id 	as product_id,
+	bi.product_code,
+	bi.product_name,
+	ni.uom       as product_unity,
+	(
+		SELECT
+			SUM(bs_.quantity)
+		FROM
+			bne_schedule bs_
+			join bne_item bi_ on bs_.id_bne_item = bi_.id
+			join poi_activity poia_ on poia_.id =bi_.id_poi_activity
+			join poi poi_ on poi_.id = poia_.id_poi
+		WHERE
+			poi_.id_dependency = poi.id_dependency AND
+			poi_.year = poi.year AND
+			bi_.id_classifier = c.id AND
+			bi.active = true AND
+			poia_.active = true AND
+			bi_.id_funding_source = fs.id AND
+			bi_.product_code = bi.product_code
+	) as total_quantity,
+	bi.unit_price
+FROM
+	bne_item bi
+	JOIN classifier c ON
+		bi.id_classifier = c.id
+	JOIN poi_activity poia ON
+		bi.id_poi_activity = poia.id
+	JOIN necessary_item ni ON
+		bi.id_necessary_item = ni.id
+	JOIN poi poi ON
+		poia.id_poi  = poi.id
+	JOIN dependency d ON
+		poi.id_dependency  = d.id
+	JOIN funding_source fs ON
+		fs.id = bi.id_funding_source
+WHERE
+	poi.id_dependency = $P{id_dependency} AND
+	poi.year = $P{year} AND d.active = true AND bi.active = true  AND
+			poia.active = true
+ORDER BY fs.code,c.path,bi.product_code]]>
+	</queryString>
+	<field name="funding_source_id" class="java.lang.Integer"/>
+	<field name="funding_source_code" class="java.lang.String"/>
+	<field name="funding_source_name" class="java.lang.String"/>
+	<field name="generic_classifier_id" class="java.lang.Long"/>
+	<field name="generic_classifier_path" class="java.lang.String"/>
+	<field name="generic_classifier_name" class="java.lang.String"/>
+	<field name="product_id" class="java.lang.Long"/>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="product_unity" class="java.lang.String"/>
+	<field name="total_quantity" class="java.lang.Double"/>
+	<field name="unit_price" class="java.lang.Double"/>
+	<variable name="total_quantity_1" class="java.lang.Double" resetType="Group" resetGroup="generic_classifier_name Group Header" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_quantity}*$F{unit_price}]]></variableExpression>
+	</variable>
+	<variable name="total_quantity_2" class="java.lang.Double" resetType="Group" resetGroup="funding_source_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_quantity}*$F{unit_price}]]></variableExpression>
+	</variable>
+	<group name="funding_source_name">
+		<groupExpression><![CDATA[$F{funding_source_name}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="0" y="1" width="802" height="17" forecolor="#FFFFFF" backcolor="#666666" uuid="fff2862a-48a1-419e-8890-de29adf5e423"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{funding_source_code}+" - "+$F{funding_source_name}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="0" y="0" width="758" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="5d7e4925-39c1-4a0d-a6e3-13981639f109"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TOTAL FTE. FINANCIAMIENTO"]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="758" y="0" width="44" height="12" uuid="6e16d495-9117-450b-baf2-49584b7b90a4"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_quantity_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="generic_classifier_name Group Header">
+		<groupExpression><![CDATA[$F{generic_classifier_name}]]></groupExpression>
+		<groupHeader>
+			<band height="17">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="19" y="0" width="783" height="16" backcolor="#CCCCCC" uuid="a4a27cf0-1571-42ca-9f99-acb88cd0f288"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{generic_classifier_path}+" - "+$F{generic_classifier_name}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement style="padd" mode="Opaque" x="19" y="0" width="739" height="12" backcolor="#CCCCCC" uuid="471a7f5a-02da-4459-8045-35fbe31e9444"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TOTAL CLASIFICADOR ESPECIFICO"]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="758" y="0" width="44" height="12" uuid="20ec21d3-e4b8-4958-bba6-0876172747c7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_quantity_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="103" splitType="Stretch">
+			<textField>
+				<reportElement x="49" y="0" width="753" height="23" uuid="b8947284-aaab-4a75-b75c-fe78db2fa0d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CUADRO DE NECESIDADES - "+$P{year}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="49" y="23" width="753" height="19" uuid="c5c62574-9887-408a-a058-75d39d13751c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[A nivel de Especificas de Gasto]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement key="table" x="0" y="53" width="802" height="37" uuid="cfa39913-774b-4d0a-ad03-f6961f7e0aab"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dependency_data" uuid="f5171d07-7d1b-4f78-ac8e-c3b0120fab8a">
+						<datasetParameter name="id_dependency">
+							<datasetParameterExpression><![CDATA[$P{id_dependency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="129" uuid="ad5c20f3-8b36-4b5b-90c0-0ba991a069d6">
+						<jr:columnHeader height="53" rowSpan="1">
+							<staticText>
+								<reportElement style="padd" x="0" y="0" width="129" height="13" uuid="c0826b0a-14fd-411b-b82d-5120def81ef1"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[PLIEGO:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="13" width="129" height="13" uuid="dac41776-f154-4f37-bf23-715fd85687f5"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[UNIDAD EJECUTORA:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="26" width="129" height="13" uuid="7ebf9236-8597-4616-b36e-74604317d07d"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[DEPENDENCIA:]]></text>
+							</staticText>
+							<staticText>
+								<reportElement style="padd" x="0" y="39" width="129" height="13" uuid="4532720a-0175-4dac-9408-513a53901b52"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<text><![CDATA[CENTRO DE COSTO:]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20" rowSpan="1"/>
+					</jr:column>
+					<jr:column width="442" uuid="72d91ce9-ee7e-4247-8298-6a80cca868d7">
+						<jr:columnHeader height="53" rowSpan="1">
+							<textField>
+								<reportElement style="padd" x="0" y="0" width="442" height="13" uuid="990fa9da-a523-458a-a018-81ca9ff25125"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA["526 Universidad Nacional Agraria de la Selva"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" x="0" y="13" width="442" height="13" uuid="c25de57e-5c37-4059-a4de-4a104ee28fec"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA["104 Universidad Nacional Agraria de la Selva"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" mode="Opaque" x="0" y="26" width="442" height="13" uuid="e1f1f5e2-1530-486c-be32-d8b2d396205e"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{parent_code}+" "+$F{parent_name}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement style="padd" x="0" y="39" width="442" height="13" uuid="bc8d2335-1bea-4edc-b98e-157a14a93168"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dependency_code}+" "+$F{dependency_name}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell height="20" rowSpan="1"/>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<image>
+				<reportElement x="0" y="0" width="49" height="42" uuid="b923b081-1299-4635-b58c-641cc0a3aa7b"/>
+				<imageExpression><![CDATA[$P{UNAS}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="50">
+			<textField>
+				<reportElement x="702" y="0" width="100" height="20" uuid="60508981-5036-4f0d-b981-ea0c8aa7d552"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())+" - SPOI"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="33" splitType="Stretch">
+			<subreport>
+				<reportElement x="301" y="14" width="371" height="13" uuid="5abc54fa-2f94-4d16-9a1d-941c05c9e02e"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{PERIODICITY-H}]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="672" y="0" width="43" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="f1b76b24-7ff4-4fc9-a2ac-581e7f3fbfdc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="715" y="0" width="43" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="291dbf2e-b19e-4cce-baa8-401ea3429017"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRECIO UNITARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="758" y="0" width="44" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="d03b57c0-9dc1-48da-a254-149c9c0c7411"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="301" y="0" width="371" height="14" forecolor="#FFFFFF" backcolor="#999999" uuid="6b82c45b-26de-4b20-8b26-c9a793352857"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMACIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="0" y="0" width="19" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="23136fd1-f8ba-4394-b148-02a58abd2fb1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="258" y="0" width="43" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="0ced493f-33e8-4f68-9525-8c3bf0b6830b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[U.M.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="padd" mode="Opaque" x="19" y="0" width="238" height="27" forecolor="#FFFFFF" backcolor="#999999" uuid="5160e238-aa5e-4e58-ba47-c22f954d72cc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESPECIFICA DE GASTO / REQUERIMIENTO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="30" y="0" width="228" height="12" isPrintWhenDetailOverflows="true" uuid="25aa5d25-83a0-47e2-995b-4ffadfcc6c17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{product_code}+" - "+$F{product_name}).toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="258" y="0" width="43" height="12" uuid="ecd21c04-ab58-49b9-9b61-b7a90655d808"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_unity}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="715" y="0" width="42" height="12" uuid="418643d6-d3b0-4008-b388-4f81b249580e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{unit_price}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="758" y="0" width="43" height="12" uuid="6d4fc716-4890-47d2-98c3-cd88fa9d8945"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_quantity}*$F{unit_price}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="301" y="0" width="371" height="12" uuid="ca0f1bc7-c09b-462c-bbbb-8c56d238769a"/>
+				<subreportParameter name="product_code">
+					<subreportParameterExpression><![CDATA[$F{product_code}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="id_funding_source">
+					<subreportParameterExpression><![CDATA[$F{funding_source_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="year">
+					<subreportParameterExpression><![CDATA[$P{year}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="id_dependency">
+					<subreportParameterExpression><![CDATA[$P{id_dependency}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="id_classifier">
+					<subreportParameterExpression><![CDATA[$F{generic_classifier_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{PERIODICITY-VALUE}]]></subreportExpression>
+			</subreport>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement style="padd" positionType="Float" stretchType="RelativeToBandHeight" x="672" y="0" width="43" height="12" uuid="40514b62-c9c2-4376-b9ee-09200b5dcf13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_quantity}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="17">
+			<staticText>
+				<reportElement x="11" y="5" width="778" height="12" uuid="ac500675-766f-4eb2-82dd-ff1a28a22a9c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Leyenda: FF= Fuente de Financiamiento]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="18" splitType="Stretch">
+			<textField>
+				<reportElement x="658" y="0" width="144" height="16" uuid="5977297f-fc18-44c9-be4b-add71245bd3d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

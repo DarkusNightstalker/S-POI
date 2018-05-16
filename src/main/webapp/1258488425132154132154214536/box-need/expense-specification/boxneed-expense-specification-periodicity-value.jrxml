@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boxneed_functional_programmatic_periodicity_value" columnCount="12" printOrder="Horizontal" pageWidth="371" pageHeight="555" orientation="Landscape" columnWidth="30" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8eaa2aa4-edc7-4288-850f-8d81e72678f7">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="padd">
+		<box leftPadding="2" rightPadding="2"/>
+	</style>
+	<parameter name="id_funding_source" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="product_code" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_classifier" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_dependency" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+SUM(bs_.quantity) as quantity
+		FROM
+			bne_schedule bs_
+			join bne_item bi_ on bs_.id_bne_item = bi_.id
+			join poi_activity poia_ on poia_.id =bi_.id_poi_activity
+			join poi poi_ on poi_.id = poia_.id_poi
+			join periodicity_item pi on pi.name  = bs_.month
+		WHERE
+			poi_.id_dependency = $P{id_dependency} AND
+			poi_.year = $P{year} AND
+			bi_.id_classifier = $P{id_classifier} ANd
+			bi_.id_funding_source = $P{id_funding_source} AND
+			bi_.product_code =  $P{product_code} AND
+			bi_.active = true AND
+			poia_.active = true
+		GROUP BY pi.ordinal
+		ORDER BY pi.ordinal]]>
+	</queryString>
+	<field name="quantity" class="java.lang.Double"/>
+	<detail>
+		<band height="12">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="padd" mode="Transparent" x="0" y="0" width="30" height="12" uuid="ac474c2d-dbdd-4cf4-b4f0-a566c689eac6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

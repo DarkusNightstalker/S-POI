@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ProductBudgetProgram" pageWidth="842" pageHeight="595" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e34de6f0-1c29-419e-a84b-c219b3b6291a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="145"/>
+	<property name="ireport.y" value="0"/>
+	<style name="EvenOddRowStyle">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$F{active}]]></conditionExpression>
+			<style backcolor="#F2DEDE"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></conditionExpression>
+			<style backcolor="#F9F9F9"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="active" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNAS" class="java.io.InputStream"/>
+	<parameter name="printHeader" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	pbp.code,
+	pbp.name,
+	array_to_string((select array_agg(bp.code) from
+budget_program_has_product_budget_program h
+join budget_program bp on h.id_budget_program = bp.id
+WHERE h.id_product_budget_program = pbp.id),',') as budget_program,
+	to_char(pbp.create_date,'DD/MM/YYYY HH24:MI:SS')
+	as create_date,
+	to_char(pbp.edit_date,'DD/MM/YYYY HH24:MI:SS') as edit_date,
+	pbp.active
+FROM product_budget_program pbp
+WHERE (pbp.active = $P{active} OR  $P{active} is null)
+ORDER BY pbp.active desc,pbp.code]]>
+	</queryString>
+	<field name="code" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="budget_program" class="java.lang.String"/>
+	<field name="create_date" class="java.lang.String"/>
+	<field name="edit_date" class="java.lang.String"/>
+	<field name="active" class="java.lang.Boolean"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="144" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{printHeader}]]></printWhenExpression>
+			<line>
+				<reportElement uuid="c81e22b9-7088-4ffa-a5ca-919b5a300788" x="131" y="85" width="535" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="4a856470-c529-415f-b286-0916546ef006" x="121" y="96" width="555" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Productos / Proyectos presupuestales]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="206146cb-60d4-4294-bf92-29ab14bb1bbd" x="205" y="40" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OFICINA DE PLANIFICACIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b510d317-b3db-4d10-8306-dd21dce854b8" x="131" y="71" width="535" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Av. Universitaria km 1.5, Telf (062) 561136, Anexo 290, Fax (062) 561156 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="61f552cc-de33-4e78-b40a-edde7cdc491a" x="205" y="26" width="387" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Tingo María]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="17d4c56d-79e9-4d1c-aa36-ac7afeeb685a" x="154" y="2" width="49" height="64"/>
+				<imageExpression><![CDATA[$P{UNAS}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="ebb3ceea-8ad7-4bb6-8c53-98299bc4fceb" x="121" y="119" width="555" height="22" forecolor="#666666"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["al "+new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="a43f5fb6-12b6-4935-8ac5-be4bced1615c" x="205" y="6" width="387" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="0e70c619-4cb4-48e8-87a4-a7f72d4aaa5c" mode="Opaque" x="0" y="0" width="100" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="701a2ba9-e1fb-4144-8e6c-d7c0ec651363" mode="Opaque" x="100" y="0" width="547" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b2c05dd6-16cd-4647-89cf-ad20fe0eb818" mode="Opaque" x="647" y="0" width="155" height="20" backcolor="#CBD2D5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Program. Presup.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="b84aef09-dc63-4df0-9777-3e5350be4b0b" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="83a6814b-e8d5-4f77-939d-61124a777a57" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="100" y="0" width="547" height="20"/>
+				<box topPadding="5" bottomPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="f4000f97-502c-4da3-bb00-fcd913b02555" style="EvenOddRowStyle" positionType="Float" stretchType="RelativeToTallestObject" mode="Opaque" x="647" y="0" width="155" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{budget_program}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

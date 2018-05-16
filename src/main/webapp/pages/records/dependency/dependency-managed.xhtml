@@ -1,0 +1,363 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/pages/records/dependency/js/dependency.managed.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Registros</li><li>Dependencias</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Presupuesto
+                        <span>&gt;  
+                            #{managedDependencyBean.selected.id eq null ? 'Creando dependencia' : 'Editando dependencia'}
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:Dependency.back()" class="btn btn-sm btn-danger"> <i class="fa fa-arrow-left"></i> Volver a la lista</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Reestablecer</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:Dependency.save()" class="btn btn-sm btn-primary"> <i class="fa fa-floppy-o"></i> Guardar cambios</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">
+                    <article class="col-xs-12 sortable-grid ui-sortable">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-sortable jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-white"></i> 
+                                </span>
+                                <h2>Informacion</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <h:form id="form">
+                                            <p:remoteCommand 
+                                                name="validatePath" 
+                                                update="form:parents,:form-bc" 
+                                                oncomplete="Dependency.endValidatePath()"
+                                                action="#{managedDependencyBean.dependencySearcher.validateCode()}" />
+                                            <p:remoteCommand 
+                                                name="save" 
+                                                update=":main" 
+                                                process="@form" action="#{managedDependencyBean.doSave('/pages/records/dependency/dependency-view.xhtml', dependencyBean)}" />
+                                            <p:commandLink id="back" styleClass="hidden" process="@this" update=":main" action="#{dependencyBean.onLoad(true)}">
+                                                <f:setPropertyActionListener value="/pages/records/dependency/dependency-view.xhtml" target="#{navigationBean.content}" />
+                                                <f:setPropertyActionListener value="#{dependencyBean}" target="#{sessionBean.loadable}" />
+                                            </p:commandLink>
+                                            <div class="form-group">
+                                                <label class="col-md-2 col-lg-1 control-label">Código</label>
+                                                <div class="col-md-3 col-lg-2">
+                                                    <div class="input-group input-group-md">   
+                                                        <script>
+                                                            $(function () {
+                                                                Dependency.configurePath();
+                                                            });
+                                                        </script>
+                                                        <h:inputText id="path" value="#{managedDependencyBean.path}" styleClass="form-control">
+                                                            <f:passThroughAttribute name="autofocus" value="true" />
+                                                        </h:inputText>
+                                                        <span id="path-options" class="input-group-btn">
+                                                            <span class="btn btn-default disabled loader hidden">
+                                                                <i class="glyphicon glyphicon-refresh fa-spin"></i>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-3 col-lg-2 pull-right">
+                                                    <label class="checkbox-inline">
+                                                        <h:selectBooleanCheckbox id="operational" value="#{managedDependencyBean.operational}" class="checkbox" >
+                                                            <p:ajax event="change" process="operational" update="operational-data" />
+                                                        </h:selectBooleanCheckbox>
+                                                        <span>¿Es una dependencia operativa?</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:panelGroup id="parents" layout="block" class="col-md-offset-2 col-lg-offset-1 col-md-10 animated fadeInDown tree">
+                                                    <script>
+                                                        $(function () {
+                                                            $('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
+                                                            $('.tree').find('li:has(ul)').addClass('parent_li').attr('role', 'treeitem').find(' > span').attr('title', 'Collapse this branch').on('click', function (e) {
+                                                                var children = $(this).parent('li.parent_li').find(' > ul > li');
+                                                                if (children.is(':visible')) {
+                                                                    children.hide('fast');
+                                                                    $(this).attr('title', 'Expand this branch').find(' > i').removeClass().addClass('fa fa-lg fa-plus-circle');
+                                                                } else {
+                                                                    children.show('fast');
+                                                                    $(this).attr('title', 'Collapse this branch').find(' > i').removeClass().addClass('fa fa-lg fa-minus-circle');
+                                                                }
+                                                                e.stopPropagation();
+                                                            });
+                                                        })
+                                                    </script>
+                                                    <h:outputText value="#{managedDependencyBean.dependencySearcher.treeView}" escape="false"/>
+                                                    <h:inputHidden id="valid-path" value="#{managedDependencyBean.dependencySearcher.validCode}" />
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 col-lg-1 control-label">Nombre</label>
+                                                <div class="col-md-10 ">   
+                                                    <h:inputText id="name" value="#{managedDependencyBean.name}" styleClass="form-control">
+                                                        <f:passThroughAttribute name="placeholder" value="Ingrese nombre" />
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-2 col-lg-1">Metas presup.</label>
+                                                <h:panelGroup id="abp-wrapper" layout="block" styleClass="col-md-10 col-lg-11">
+                                                    <div class="input-group input-group-md">
+                                                        <script>
+                                                            $(function () {
+                                                                $("#form\\:abp").select2({
+                                                                    width: "100%",
+                                                                    placeholder: "Agregar nueva meta"
+                                                                })
+                                                            });
+                                                        </script>
+                                                        <h:selectOneMenu  id="abp" value="#{managedDependencyBean.abpSearcher.selected}">
+                                                            <f:selectItem/>
+                                                            <f:selectItems 
+                                                                value="#{managedDependencyBean.abpSearcher.data}" var="item"
+                                                                itemLabel="#{item['code']} || #{item['name']}" itemValue="#{item['id']}"/>
+                                                        </h:selectOneMenu>
+                                                        <span class="input-group-btn">
+                                                            <p:commandLink 
+                                                                update="form:abp-wrapper"
+                                                                action="#{managedDependencyBean.abpSearcher.add()}" class="btn btn-default" style="background:#eee;color: rgb(153,153,153)" >
+                                                                <i class="fa fa-plus"></i>
+                                                            </p:commandLink>
+                                                        </span>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <table id="inbox-table" class="table table-hover table-striped table-forum">
+                                                                <ui:fragment rendered="#{not empty managedDependencyBean.abps}">
+                                                                    <tbody>
+                                                                        <ui:repeat value="#{managedDependencyBean.abps}" var="item">
+                                                                            <tr>
+                                                                                <td class="text-center" style="width: 40px;"><i class="fa fa-tasks fa-2x text-muted"></i></td>
+                                                                                <td>
+                                                                                    <h4>
+                                                                                        <a href="javascript:void(0)">
+                                                                                            #{item['name'].toUpperCase()} - #{item['functionalSequence'] eq null ? '????' : item['functionalSequence']}
+                                                                                        </a>
+                                                                                        <small>#{item['code']}</small>
+                                                                                    </h4>
+                                                                                </td>
+                                                                                <td class="text-center" style="width: 40px;">
+                                                                                    <p:commandLink 
+                                                                                        update="form:abp-wrapper"
+                                                                                        action="#{managedDependencyBean.abpSearcher.remove(item)}" styleClass="btn btn-xs btn-danger"  >
+                                                                                        <i class="fa fa-times"/>
+                                                                                    </p:commandLink>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </ui:repeat>
+                                                                    </tbody>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{empty managedDependencyBean.abps}">
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td colspan="3">
+                                                                                <h5 class="text-muted">No se ha escogido actividades presupuestales</h5>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </ui:fragment>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                            <ui:fragment rendered="#{managedDependencyBean.selected.id eq null}">
+                                                <div class="form-group">
+                                                    <div class="col-md-10 col-md-offset-2 col-lg-offset-1">
+                                                        <label class="checkbox-inline">
+                                                            <h:selectBooleanCheckbox id="create-again" value="#{managedDependencyBean.createAgain}" class="checkbox" />
+                                                            <span>Crear nuevo al terminar</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:form>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <h:panelGroup id="operational-data" layout="block" class="row">
+                    <ui:fragment rendered="#{managedDependencyBean.operational}">
+                        <article class="col-xs-12 sortable-grid ui-sortable">
+                            <div class="jarviswidget jarviswidget-sortable jarviswidget-color-teal" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                                <header role="heading">
+                                    <span class="widget-icon"> 
+                                        <i class="fa fa-dollar txt-color-white"></i> 
+                                    </span>
+                                    <h2>Techo presupuestal - #{sessionBean.operationYear}</h2> 
+                                    <h:form id="form-opt">
+                                        <ui:fragment rendered="#{not empty managedDependencyBean.fundingSourceSearcher.data}">
+                                            <div class="widget-toolbar">
+                                                <div class="btn-group font-xs">
+                                                    <button class="btn bg-color-teal txt-color-white btn-xs dropdown-toggle" data-toggle="dropdown">
+                                                        AGREGAR FTE <span class="fa fa-plus"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <ui:repeat value="#{managedDependencyBean.fundingSourceSearcher.data}" var="item">
+                                                            <li>
+                                                                <p:commandLink onstart="updateBC();begin_load()" oncomplete="end_load()" update=":form-bc,:form-opt" action="#{managedDependencyBean.fundingSourceSearcher.add()}">
+                                                                    #{item['code']} - #{item['abbr']}
+                                                                    <f:setPropertyActionListener target="#{managedDependencyBean.fundingSourceSearcher.selected}" value="#{item['id']}"/>
+                                                                </p:commandLink>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </h:form>
+                                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                                </header>
+
+                                <div role="content">
+
+                                    <div class="widget-body no-padding">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-horizontal">
+                                                    <h:form id="form-bc">
+                                                        <script>
+                                                            $(function () {
+                                                                Dependency.configureBC();
+                                                            });
+                                                        </script>
+                                                        <table class="table table-condensed table-bordered" cellspacing="0" cellpadding="0" style="
+                                                               margin-bottom: 0px;
+                                                               ">
+                                                            <thead>
+                                                                <tr style="border:none">
+                                                                    <th style="background: #FFFFFF;border: none"></th>
+                                                                    <ui:repeat value="#{managedDependencyBean.fundingSources}" varStatus="st_h" var="fs">
+                                                                        <th style="width: 150px;vertical-align: middle" data-x="header-#{st_h.index}" class="text-center">#{fs['code']} - #{fs['abbr']} 
+                                                                            <p:commandLink update=":form-bc,:form-opt" action="#{managedDependencyBean.fundingSourceSearcher.remove(fs)}" styleClass="btn btn-xs btn-default pull-right"  >
+                                                                                <i class="fa fa-times font-xs text-muted" style="font-size: 8px"/>
+                                                                            </p:commandLink>
+                                                                        </th>
+                                                                    </ui:repeat>
+                                                                    <ui:fragment rendered="#{empty managedDependencyBean.fundingSources}">
+                                                                        <th class="text-center font-xs" style="width: 500px">
+                                                                        </th>
+                                                                    </ui:fragment>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <ui:repeat value="#{managedDependencyBean.genericClassifiers}" var="gc" varStatus="st_y">
+                                                                    <tr>
+                                                                        <td class="font-xs" data-y="header-#{st_y.index}" style="padding: 0px 10px !important; vertical-align: middle" ><strong>#{gc.path}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{gc.name}</td>
+                                                                        <ui:repeat value="#{managedDependencyBean.fundingSources}" var="fs" varStatus="st_x">
+                                                                            <td class="text-center" style="padding: 0px !important;border: none !important;">
+                                                                                <h:inputText converter="javax.faces.BigDecimal" style="vertical-align: middle" value="#{managedDependencyBean.getByFundingSource(managedDependencyBean.budgetCeilings[fs['id']], gc)['quantity']}" styleClass="form-control input-xs text-right">
+                                                                                    <f:passThroughAttribute name="placeholder" value="-"/>
+                                                                                    <f:passThroughAttribute name="data-x" value="#{st_x.index}"/>
+                                                                                    <f:passThroughAttribute name="data-y" value="#{st_y.index}"/>
+                                                                                </h:inputText>
+                                                                            </td>
+                                                                        </ui:repeat>
+                                                                        <ui:fragment rendered="#{empty managedDependencyBean.fundingSources and st_y.index eq 0}">
+                                                                            <td class="font-xs text-center" rowspan="#{managedDependencyBean.genericClassifiers.size()}" style="vertical-align: middle" >
+                                                                                <h3 class="text-muted"> NO SE HA AGREGADO FTES DE FINANCIAMIENTO</h3></td>
+                                                                        </ui:fragment>
+                                                                    </tr>
+                                                                </ui:repeat>
+                                                            </tbody>
+                                                            <ui:fragment rendered="#{not empty managedDependencyBean.fundingSources}">
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td class="font-xs text-center" ><strong>TOTAL</strong></td>
+                                                                        <ui:repeat value="#{managedDependencyBean.fundingSources}" var="fs" varStatus="st_fs">
+                                                                            <td id="form-bc:total-#{st_fs.index}" class="text-right font-xs " style="padding: 2px 10px !important;font-weight: bold"></td>
+                                                                        </ui:repeat>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </ui:fragment>
+                                                        </table>
+                                                        <p:remoteCommand name="submitBC" process="@form" oncomplete="save()"/>
+                                                        <p:remoteCommand name="updateBC" process="@form" />
+                                                    </h:form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </ui:fragment>
+                </h:panelGroup>
+            </section>
+        </div>
+    </div>
+
+
+</ui:composition>

@@ -1,0 +1,726 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/classifier.report.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>MEF</li><li>Clasif. Gastos</li><li>Reportes</li>
+        </ol>
+    </div>
+    <!-- END RIBBON -->
+
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <!-- row -->
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Reportes
+                        <span>>  
+                            Clasificadores
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:beginImport()" class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> Importar datos</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:Classifier.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar clasificador </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">  
+                    <div class="col-sm-3">
+                        <div class="row">
+                            <article class="col-sm-12">
+                                <!-- new widget -->
+                                <div class="jarviswidget jarviswidget-color-blueLight" 
+                                     data-widget-editbutton="false"
+                                     data-widget-fullscreenbutton="false" 
+                                     data-widget-colorbutton="false" 
+                                     data-widget-deletebutton="false"
+                                     data-widget-sortable="false">
+                                    <header>
+                                        <span class="widget-icon"> 
+                                            <i class="fa fa-database txt-color-darken"></i> 
+                                        </span>
+                                        <h2>Todos los campos</h2>
+                                        <div class="widget-toolbar" id="switch-1" role="menu">
+                                            <button type="button" onclick="$('#modal-tables').modal()" style="background: none;border: none"><i class="fa fa-table"></i></button>
+                                        </div>
+                                    </header>
+
+                                    <div>
+                                        <div class="widget-body">
+                                            <h:panelGroup id="table-wrapper" layout="block">
+                                                <script>
+                                                    $(function () {
+                                                        $(".permission-ck").on("change", function () {
+                                                            if ($(this).is(":disabled")) {
+                                                                return;
+                                                            }
+                                                            if (this.checked) {
+                                                                $(this).closest("tr").addClass("highlight");
+                                                            } else {
+                                                                $(this).closest("tr").removeClass("highlight");
+                                                            }
+                                                        }).trigger("change");
+                                                    });
+                                                </script>
+                                                <table id="inbox-table" class="table table-hover table-striped table-forum table-condensed">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-tags fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Clasificador
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Código</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa  fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Nombre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr> 
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-cubes fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Item de necesidad
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Código</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Nombre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Precio</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Unidad</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-table fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Cuadro de Necesidades
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Código de producto</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Nombre de producto</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Código de fte. finac.</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Precio Unit.</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Cantidad tot.</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-tasks fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        POI
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Código actividad</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Nombre actividad</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-building fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Dependencia
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Código dependencia</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Nombre dependencia</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >Operatibilidad</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/>  &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-calendar fa-2x text-muted"></i></td>
+                                                            <td>
+                                                                <h4>
+                                                                    <a href="javascript:void(0)">
+                                                                        Meses Cuadro de nec.
+                                                                    </a>
+                                                                    <small>campos</small>
+                                                                </h4>
+                                                            </td>
+                                                            <td class="text-center" style="width: 80px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Enero</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Enero</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Febrero</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Marzo</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Abril</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Mayo</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Junio</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Julio</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Agosto</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Septiembre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Octubre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Noviembre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td>Cant. Diciembre</td>
+                                                            <td style="width: 80px;">
+                                                                <p:commandLink class="btn bg-color-purple txt-color-white btn-xs pull-right">
+                                                                    <i class="fa fa-cogs"/> &nbsp;&nbsp;&nbsp;
+                                                                </p:commandLink>
+                                                                <label class="checkbox pull-right">
+                                                                    <h:selectBooleanCheckbox  styleClass="checkbox permission-ck" />
+                                                                    <span>&nbsp;</span>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article class="col-sm-12">
+                                <!-- new widget -->
+                                <div class="jarviswidget jarviswidget-color-blueLight" 
+                                     data-widget-editbutton="false"
+                                     data-widget-fullscreenbutton="false" 
+                                     data-widget-colorbutton="false" 
+                                     data-widget-deletebutton="false"
+                                     data-widget-sortable="false">
+                                    <header>
+                                        <span class="widget-icon"> 
+                                            <i class="fa fa-sort txt-color-darken"></i> 
+                                        </span>
+                                        <h2>Orden de campos</h2>
+                                    </header>
+
+                                    <div>
+                                        <div class="widget-body">
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article class="col-sm-12">
+                                <!-- new widget -->
+                                <div class="jarviswidget jarviswidget-color-blueLight" 
+                                     data-widget-editbutton="false"
+                                     data-widget-fullscreenbutton="false" 
+                                     data-widget-colorbutton="false" 
+                                     data-widget-deletebutton="false"
+                                     data-widget-sortable="false">
+                                    <header>
+                                        <span class="widget-icon"> 
+                                            <i class="fa fa-info txt-color-darken"></i> 
+                                        </span>
+                                        <h2>Datos del informe</h2>
+                                    </header>
+
+                                    <div>
+                                        <div class="widget-body">
+                                            <div class="">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="row">
+                            <article class="col-sm-12">
+                                <!-- new widget -->
+                                <div class="jarviswidget jarviswidget-color-blueLight" 
+                                     data-widget-togglebutton="false"
+                                     data-widget-editbutton="false"
+                                     data-widget-fullscreenbutton="false" 
+                                     data-widget-colorbutton="false" 
+                                     data-widget-deletebutton="false"
+                                     data-widget-sortable="false">
+                                    <header>
+                                        <span class="widget-icon"> 
+                                            <i class="fa fa-file txt-color-darken"></i> 
+                                        </span>
+                                        <h2>Reporte</h2>
+                                    </header>
+
+                                    <div>
+                                        <div class="widget-body">
+                                            <iframe class="col-md-12 margin-bottom-10" height="900px" style="border: 3px dashed #CCC;overflow: scroll">
+
+                                            </iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-tables" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar programas presupuestales</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form styleClass="form-horizontal">
+                        <p:commandLink style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-tags txt-color-green"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Clasificadores
+                        </p:commandLink>
+                        <p:commandLink style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-cubes txt-color-red"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Item de necesidad
+                        </p:commandLink>
+                        <p:commandLink style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-table txt-color-blue"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Cuad. de necesi.
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{budgetProgramBean.export.toTxt()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-text-o text-muted"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Texto plano
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{budgetProgramBean.export.toSyBase()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-database text-warning"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            dBase
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{budgetProgramBean.export.toHtml()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            HTML
+                        </p:commandLink>
+                        <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label class="checkbox-inline">
+                                    <h:selectBooleanCheckbox value="#{budgetProgramBean.export.activeHeader}" styleClass="checkbox" />
+                                    <span>Incluir cabecera</span>
+                                </label>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="false">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <h:selectBooleanCheckbox value="#{budgetProgramBean.export.allowDropped}" styleClass="checkbox" />
+                                        <span>Excluir eliminados</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</ui:composition>

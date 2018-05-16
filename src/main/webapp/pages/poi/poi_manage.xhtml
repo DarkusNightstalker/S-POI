@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Operaciones</li><li>POI</li>
+        </ol>
+    </div>
+
+
+
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <div id="body-content" class="hidden">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+                        <i class="fa-fw fa fa-home"></i> 
+                        Operaciones
+                        <span>>  
+                            Planes Operativos Internos
+                        </span>
+                    </h1>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:FundingSource.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar rubro </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <div class="row">           
+
+                    <article class="col-sm-12">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Planes Operativos Internos #{sessionBean.currentDependency ne null ? ('de ').concat(sessionBean.currentDependency.name) : ''}</h2>
+
+                            </header>
+
+                            <div>
+
+                                <div class="jarviswidget-editbox">
+
+                                </div>
+
+                                <div class="widget-body no-padding">
+                                    <div class="widget-body-toolbar">
+                                        <h:form id="form-record">
+                                            <div class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-lg-1 col-md-2 control-label">Dependencia</label>
+                                                    <div class="col-lg-11 col-md-10">
+                                                        <script>
+                                                            $(function () {
+                                                                $("#form-record\\:dependency").select2({
+                                                                    width: "100%",
+                                                                    placeholder: "Seleccione una dependencia"
+                                                                })
+                                                            })
+                                                        </script>
+                                                        <h:selectOneMenu  id="dependency">
+                                                            <f:selectItem/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </h:form>
+                                    </div>
+                                    <div class=" table-responsive" >
+                                        <script>
+                                            $(function () {
+                                                var table = $("#datatable");
+                                                $("#datatable tbody").on("click", "button.btn-expand", function () {
+                                                    var tr = $(this).closest("tr").next("tr")
+                                                    if (tr.hasClass("hidden")) {
+                                                        tr.removeClass("hidden");
+                                                        $(this).find("i").removeClass("fa-plus").addClass("fa-minus");
+                                                        $(this).removeClass("btn-success").addClass("btn-danger");
+                                                    } else {
+                                                        tr.addClass("hidden");
+                                                        $(this).find("i").addClass("fa-plus").removeClass("fa-minus");
+                                                        $(this).removeClass("btn-danger").addClass("btn-success");
+
+                                                    }
+                                                });
+                                                $(".pei-label").removeClass("ui-commandlink ui-widget");
+                                            });
+                                        </script>
+                                        <table id="datatable" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 40px"></th>
+                                                    <th>Nombre</th>
+                                                    <th style="width: 100px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><button type="button" class="btn btn-expand btn-xs btn-success"><i class="fa fa-plus"/></button></td>
+                                                    <td>Plan Operativo Institucional 2016</td>
+                                                    <td style="vertical-align: middle !important" class="text-center">
+                                                        <div class="btn-group">
+                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                            <p:commandLink process="@this" update=":main"  class="btn bg-color-purple txt-color-white btn-xs">
+                                                                <i class="fa fa-file"></i>
+                                                            </p:commandLink><p:commandLink process="@this" update=":main"  styleClass="btn btn-success btn-xs">
+                                                                <i class="fa fa-eye"></i>
+                                                            </p:commandLink>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hidden">
+                                                    <td style="background: rgb(249,249,249)"></td>
+                                                    <td colspan="2" class="no-padding">
+                                                        <table class="table table-condensed">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-md-1 text-center">C&oacute;digo</th>
+                                                                    <th class="col-md-5">Actividad</th>
+                                                                    <th class="col-md-2 text-center">Act. presup.</th>
+                                                                    <th class="col-md-4">PEI</th>
+                                                                    <th class="text-center" style="width: 50px">Total</th>
+                                                                    <th style="width: 100px;min-width: 100px;max-width: 100px"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row" style="vertical-align: middle !important" class="text-center">0001</th >
+                                                                    <td style="vertical-align: middle !important"> dadasd</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center"><p:commandLink>5500010 <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                    <td><small class="font-xs text-muted">
+                                                                            <strong>Eje estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">E.01</p:commandLink>  
+                                                                            <strong>Obj estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">0.01</p:commandLink>  <br/>
+                                                                            <strong>Obj esp:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01</p:commandLink>  
+                                                                            <strong>Act estrat:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01.01</p:commandLink>  <br/>
+                                                                        </small></td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">14</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">
+                                                                        <div class="btn-group">
+                                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink styleClass="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></p:commandLink>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="vertical-align: middle !important" class="text-center">0002</td>
+                                                                    <td style="vertical-align: middle !important"> dadasd</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center"><p:commandLink>5500010 <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                    <td><small class="font-xs text-muted">
+                                                                            <strong>Eje estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">E.01</p:commandLink>  
+                                                                            <strong>Obj estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">0.01</p:commandLink>  <br/>
+                                                                            <strong>Obj esp:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01</p:commandLink>  
+                                                                            <strong>Act estrat:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01.01</p:commandLink>  <br/>
+                                                                        </small></td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">14</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">
+                                                                        <div class="btn-group">
+                                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink styleClass="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></p:commandLink>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="vertical-align: middle !important" class="text-center">0003</td>
+                                                                    <td style="vertical-align: middle !important"> dadasd</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center"><p:commandLink>5500010 <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                    <td>
+                                                                        <small class="font-xs text-muted">
+                                                                            <strong>Eje estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">E.01</p:commandLink>  
+                                                                            <strong>Obj estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">0.01</p:commandLink>  <br/>
+                                                                            <strong>Obj esp:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01</p:commandLink>  
+                                                                            <strong>Act estrat:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01.01</p:commandLink>  <br/>
+                                                                        </small>
+                                                                    </td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">14</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">
+                                                                        <div class="btn-group">
+                                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink styleClass="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></p:commandLink>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="vertical-align: middle !important" class="text-center">0004</td>
+                                                                    <td style="vertical-align: middle !important"> dadasd</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center"><p:commandLink>5500010 <i class="fa fa-sign-in"/></p:commandLink></td>
+                                                                    <td><small class="font-xs text-muted">
+                                                                            <strong>Eje estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">E.01</p:commandLink>  
+                                                                            <strong>Obj estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">0.01</p:commandLink>  <br/>
+                                                                            <strong>Obj esp:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01</p:commandLink>  
+                                                                            <strong>Act estrat:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01.01</p:commandLink>  <br/>
+                                                                        </small></td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">14</td>
+                                                                    <td style="vertical-align: middle !important" class="text-center">
+                                                                        <div class="btn-group">
+                                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink styleClass="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></p:commandLink>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><button type="button" class="btn btn-expand btn-xs btn-danger"><i class="fa fa-minus"/></button></td>
+                                                    <td>Plan Operativo Institucional 2015</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr class="hidden">
+                                                    <td style="background: rgb(249,249,249)"></td>
+                                                    <td colspan="2" class="no-padding">
+                                                        <table class="table table-condensed">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-md-1">C&oacute;digo</th>
+                                                                    <th>Actividad</th>
+                                                                    <th class="col-md-2 text-center">Act. presup.</th>
+                                                                    <th class="col-md-3">PEI</th>
+                                                                    <th class="text-center" style="width: 50px">Total</th>
+                                                                    <th style="width: 90px"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td> asdasd</td>
+                                                                    <td> dadasd</td>
+                                                                    <td class="text-center">5500010</td>
+                                                                    <td><small class="font-xs text-muted">
+                                                                            <strong>Eje estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">E.01</p:commandLink>  
+                                                                            <strong>Obj estrat:</strong> &nbsp;<p:commandLink class="label label-info pei-label">0.01</p:commandLink>  <br/>
+                                                                            <strong>Obj esp:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01</p:commandLink>  
+                                                                            <strong>Act estrat:</strong> &nbsp;<p:commandLink class="label label-info  pei-label">0.01.01.01</p:commandLink>  <br/>
+                                                                        </small></td>
+                                                                    <td class="text-center">14</td>
+                                                                    <td class="text-center">
+                                                                        <div class="btn-group">
+                                                                            <p:commandLink onclick="$('#myModal').modal()" styleClass="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></p:commandLink>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </p:commandLink>
+                                                                            <p:commandLink styleClass="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></p:commandLink>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+</ui:composition>

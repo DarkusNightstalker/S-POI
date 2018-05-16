@@ -1,0 +1,486 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/specific_goal.reg.js"/>
+    <h:form id="form-search">
+        <h:inputHidden id="code" value="#{specificGoalBean.code}" />
+        <h:inputHidden id="name" value="#{specificGoalBean.name}" />
+        <h:inputHidden id="pei" value="#{specificGoalBean.idStrategicAxis}" />
+        <p:remoteCommand name="search" action="#{specificGoalBean.search()}" onstart="SpecificGoal.beginSearch()" oncomplete="SpecificGoal.endSearch()" update=":table-wrapper" />
+        <p:remoteCommand name="beginImport" action="#{specificGoalBean.import_.refresh()}" oncomplete="$('#modal-import').modal({backdrop:'static',keyboard:false})" update=":form-progress,:form-import" />
+        <p:remoteCommand name="del" action="#{managedSpecificGoalBean.delete(specificGoalBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+        <p:remoteCommand name="recovery" action="#{managedSpecificGoalBean.recovery(specificGoalBean.id)}"  oncomplete="search()" update=":table-wrapper" />
+
+        <p:commandLink 
+            id="create"
+            process="@this" 
+            styleClass="hidden"
+            update=":main"
+            action="#{managedSpecificGoalBean.create()}">
+            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedSpecificGoalBean}" />
+            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/specific_goal.xhtml" />
+        </p:commandLink>
+
+    </h:form>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Home</li><li>Miscellaneous</li><li>Blank Page</li>
+        </ol>
+    </div>
+    <!-- END RIBBON -->
+
+
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <!--<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>-->
+        <!-- row -->
+        <div id="body-content" class="hidden">
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Registros
+                        <span>>  
+                            Objetivos especificos
+                        </span>
+                    </h1>
+                </div>
+                <!-- end col -->
+
+                <!-- right side of the page with the sparkline graphs -->
+                <!-- col -->
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:beginImport()" class="btn btn-sm btn-primary"> <i class="fa fa-upload"></i> Importar datos</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="javascript:SpecificGoal.create()" class="btn btn-sm btn-success"> <i class="fa fa-plus"></i> Agregar objetivo especifico</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+            </div>
+
+            <section id="widget-grid" class="">
+
+                <!-- row -->
+                <div class="row">           
+                    <article class="col-sm-4">
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-fullscreenbutton="false" 
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="glyphicon glyphicon-search txt-color-darken"></i> 
+                                </span>
+                                <h2>Busqueda</h2>
+                            </header>
+
+                            <!-- widget div-->
+                            <div>
+
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por codigo</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="glyphicon glyphicon-barcode"></i>
+                                                            <input type="text" id="code" value="#{specificGoalBean.code}" autofocus="true" class="form-control" placeholder="Ingrese el codigo"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por nombre</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-icon-left">
+                                                            <i class="fa fa-tag"></i>
+                                                            <input type="text" id="name" value="#{specificGoalBean.name}" class="form-control" placeholder="Ingrese el nombre"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 3px">
+                                            <label class="col-md-12 control-label font-xs text-left text-muted">Buscar por Eje est.</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="input-group input-group-md">
+                                                    <select id="pei" >
+                                                        <option/>
+                                                        <ui:repeat var="item" value="#{specificGoalBean.strategicAxisSearcher.data}">
+                                                            <option value="#{item[0]}">#{item[1]} || #{item[2]}</option>
+                                                        </ui:repeat>
+                                                    </select>
+                                                    <span class="input-group-btn">
+                                                        <button onclick="$('#pei').val('').trigger('change')" class="btn btn-default" style="background:#eee;color: rgb(153,153,153)" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button id="btn-search" onclick="SpecificGoal.search()" class="btn btn-primary" type="button">
+                                                        Comenzar <i  style="display: none " class="fa fa-refresh fa-spin pull-right"/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    </article>
+
+                    <article class="col-sm-8">
+                        <div class="jarviswidget jarviswidget-color-blueLight" 
+                             data-widget-togglebutton="false"
+                             data-widget-editbutton="false"
+                             data-widget-colorbutton="false" 
+                             data-widget-deletebutton="false">
+                            <header>
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-table txt-color-darken"></i> 
+                                </span>
+                                <h2>Lista de objetivos especificos</h2>
+                                <div class="widget-toolbar" id="switch-1" role="menu">
+                                    <button type="button" onclick="$('#modal-download').modal()" style="background: none;border: none"><i class="fa fa-download"></i></button>
+                                </div>
+                            </header>
+
+                            <div>
+
+                                <div class="jarviswidget-editbox">
+
+                                </div>
+                                <div class="widget-body no-padding">
+                                    <h:panelGroup id="table-wrapper" layout="block">
+
+                                        <h:form>
+                                            <div class="dataTables_wrapper form-inline no-footer">
+
+                                                <div class="dt-toolbar-footer">
+                                                    <div class="col-sm-6 col-xs-12 hidden-xs">
+                                                        <div class="dataTables_info" >
+                                                            <h:outputText escape="false" value="#{specificGoalBean.pagination.message()}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="dataTables_paginate paging_simple_numbers" id="result-table_paginate">
+                                                            <ul class="pagination pagination-sm">
+
+                                                                <ui:fragment rendered="#{specificGoalBean.pagination.recordStart eq 1 or specificGoalBean.pagination.recordStart eq null}">
+                                                                    <li class="paginate_button disabled previous">
+                                                                        <a href="javascript:void(0)"><i class="fa fa-arrow-left"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{specificGoalBean.pagination.recordStart gt 1}">
+                                                                    <li class="paginate_button previous">
+                                                                        <a href="javascript:pagePrevious()"><i class="fa fa-arrow-left"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+<!--                                                                <ui:fragment rendered="#{specificGoalBean.pagination.page ne null}">
+                                                                    <li class="paginate_button #{1 eq specificGoalBean.pagination.page ? 'active' : ''}">
+                                                                        <a href="#">1</a>
+                                                                    </li>
+
+                                                                    <ui:fragment rendered="#{specificGoalBean.pagination.lastPage ne 1}">
+
+                                                                        <ui:fragment rendered="#{specificGoalBean.pagination.lastPage gt 2}">
+                                                                            <ui:fragment rendered="#{specificGoalBean.pagination.page lt 5}">
+                                                                                <li class="paginate_button ">
+                                                                                </li>
+
+                                                                                <li class="paginate_button ">
+                                                                                    <a href="#">3</a>
+                                                                                </li>
+
+                                                                                <li class="paginate_button active">
+                                                                                    <a href="#">4</a>
+                                                                                </li>
+                                                                            </ui:fragment>
+
+                                                                            <li class="paginate_button ">
+                                                                                <a href="#">5</a>
+                                                                            </li>
+
+                                                                            <li class="paginate_button disabled">
+                                                                                <a href="#">…</a>
+                                                                            </li>
+                                                                        </ui:fragment>
+
+                                                                        <li class="paginate_button #{specificGoalBean.pagination.lastPage eq specificGoalBean.pagination.page ? 'active' : ''}">
+                                                                            <a href="#">#{specificGoalBean.pagination.lastPage}</a>
+                                                                        </li>
+                                                                    </ui:fragment>
+                                                                </ui:fragment>-->
+
+
+                                                                <ui:fragment rendered="#{specificGoalBean.pagination.recordEnd eq specificGoalBean.pagination.totalRecords or specificGoalBean.pagination.recordEnd eq null}">
+                                                                    <li class="paginate_button disabled next">
+                                                                        <a href="javascript:void(0)"><i class="fa fa-arrow-right"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{specificGoalBean.pagination.recordEnd ne specificGoalBean.pagination.totalRecords}">
+                                                                    <li class="paginate_button next">
+                                                                        <a href="javascript:pageNext()"><i class="fa fa-arrow-right"></i></a>
+                                                                    </li>
+                                                                </ui:fragment>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <table id="result-table" class="table table-bordered table-striped table-condensed table-hover smart-form " width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col-xs-1 text-center">Eje</th>
+                                                            <th class="col-xs-2">Código</th>
+                                                            <th class="col-xs-9">Nombre </th>
+                                                            <th style="min-width: 70px"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{specificGoalBean.pagination.data}" var="item" varStatus="status">
+                                                            <tr>
+                                                                <td style="vertical-align: middle" class="text-center">#{item[3]}</td>
+                                                                <td style="vertical-align: middle">#{item[1]}</td>
+                                                                <td style="vertical-align: middle">#{item[2].toUpperCase()}</td>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <h:form>
+                                                                        <div class="btn-group">
+                                                                            <a onclick="$('#myModal').modal()" class="btn btn-primary btn-xs"><i class="fa fa-info-circle"></i></a>
+                                                                            <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                                                                                <i class="fa fa-edit"></i>
+                                                                                <f:setPropertyActionListener target="#{managedSpecificGoalBean.idSelected}" value="#{item[0]}" />
+                                                                                <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedSpecificGoalBean}" />
+                                                                                <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/specific_goal.xhtml" />
+                                                                            </p:commandLink>
+                                                                            <a class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
+                                                                        </div>
+                                                                    </h:form>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                </table><div class="dt-toolbar">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="dataTables_info">
+                                                            Página <span class="txt-color-darken">#{specificGoalBean.pagination.page}</span> de  <span class="txt-color-darken">#{specificGoalBean.pagination.lastPage}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 col-xs-12 hidden-xs">
+                                                        <div class="dataTables_length" id="result-table_length">
+                                                            <label>
+                                                                <h:selectOneMenu value="#{specificGoalBean.pagination.rows}" class="form-control">
+                                                                    <f:selectItems value="#{specificGoalBean.pagination.rowsData}" var="r" itemValue="#{r[0]}" itemLabel="#{r[1]}"/>
+                                                                    <p:ajax event="change" 
+                                                                            onstart="begin_load()"
+                                                                            oncomplete="end_load()" process="@this" listener="#{specificGoalBean.pagination.changeRows()}" update=":table-wrapper" />
+                                                                </h:selectOneMenu>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <input id="message-search" type="hidden" value=""  />
+                                            <p:remoteCommand name="pageNext" action="#{specificGoalBean.pagination.next()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                            <p:remoteCommand name="pagePrevious" action="#{specificGoalBean.pagination.previous()}" 
+                                                             onstart="begin_load()"
+                                                             oncomplete="end_load()" update=":table-wrapper"/>
+                                        </h:form>
+                                        <input id="message-search" type="hidden" value=""  />
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-download" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Exportar objetivos especificos</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form styleClass="form-horizontal">
+                        <p:commandLink ajax="false" process="@form" action="#{specificGoalBean.export.toXlsx()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-excel-o txt-color-green"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Excel
+                        </p:commandLink>
+                        <p:commandLink ajax="false" process="@form"  action="#{specificGoalBean.export.toPdf()}"  style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-pdf-o txt-color-red"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            PDF
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{specificGoalBean.export.toDocx()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-word-o txt-color-blue"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            MS Word
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{specificGoalBean.export.toTxt()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-text-o text-muted"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            Texto plano
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{specificGoalBean.export.toSyBase()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-database text-warning"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            dBase
+                        </p:commandLink>
+                        <p:commandLink  ajax="false" process="@form"  action="#{specificGoalBean.export.toHtml()}" style="width: 25%" styleClass="btn btn-default btn-lg">
+                            <i class="fa fa-3x fa-file-code-o txt-color-purple"></i>
+                            <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                            HTML
+                        </p:commandLink>
+                        <hr style="margin-top: 5px;margin-bottom: 5px"/>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label class="checkbox-inline">
+                                    <h:selectBooleanCheckbox value="#{specificGoalBean.export.activeHeader}" styleClass="checkbox" />
+                                    <span>Incluir cabecera</span>
+                                </label>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="false">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <h:selectBooleanCheckbox value="#{specificGoalBean.export.allowDropped}" styleClass="checkbox" />
+                                        <span>Excluir eliminados</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                    </h:form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" ><i class="fa fa-file-excel-o"></i> Importar desde Excel</h4>
+                </div>
+                <h:form id="form-import" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div id="import-file-wrapper" class="smart-form">
+                            <section>
+                                <label class="label">Importa desde</label>
+                                <div class="input input-file">
+                                    <span class="button">
+                                        <h:inputFile id="file" value="#{specificGoalBean.import_.file}" onchange="document.getElementById('import-display-file').value = this.value" />Buscar
+                                    </span>
+                                    <input type="text" id="import-display-file" onclick="" placeholder="Seleccione un archivo" readonly=""/>
+                                </div>
+                            </section>
+                        </div>
+                        <h:panelGroup style="display: none" styleClass="animated fadeInDown" id="load-wrapper">
+                            <p>
+                                <span id="import-state">#{specificGoalBean.import_.state.description}</span> <span class="txt-color-purple pull-right"><i class="fa fa-warning"></i><span id="import-percent">0</span>% Completado</span>
+                            </p>
+                            <div class="progress progress-sm progress-striped active">
+                                <div id="import-progress-bar" class="progress-bar bg-color-darken" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div id="import-data" style="max-height: 200px;overflow-y: auto;border: 4px dashed #EFEFEF">
+                                <table class="table table-condensed smart-form " width="100%">
+                                    <thead class="hidden">
+                                        <tr>
+                                            <th style="min-width: 30px"></th>
+                                            <th class="col-xs-3"></th>
+                                            <th class="col-xs-9"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </h:panelGroup>
+
+                    </div>
+                    <div class="modal-footer">
+                        <h:commandLink id="button-submit" onclick="$('#import-file-wrapper').css('display', 'none');
+                                $('#form-import\\:button-submit').css('display', 'none');
+                                $('#form-import\\:load-wrapper').css('display', 'block');
+                                updateProgress()" styleClass="btn btn-primary" action="#{specificGoalBean.import_.begin()}">
+                            Comenzar <i class="fa fa-upload"></i>
+                            <f:ajax execute="@form" render="@none" />
+                        </h:commandLink>
+                    </div>
+                </h:form>
+                <h:form id="form-progress">
+                    <h:inputHidden id="percent" value="#{specificGoalBean.import_.percentLoad}" />
+                    <h:inputHidden id="content" value="#{specificGoalBean.import_.renderContent}" />
+                    <h:inputHidden id="finalize" value="#{specificGoalBean.import_.state.terminate}" />
+                    <h:inputHidden id="state" value="#{specificGoalBean.import_.state.description}" />
+                    <h:inputHidden id="message" value="#{specificGoalBean.import_.message}" />
+                    <p:remoteCommand  name="updateProgress" oncomplete="SpecificGoal.updateProgress()" process="@this" update=":form-progress"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

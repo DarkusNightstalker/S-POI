@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boxneed_functional_programmatic_periodicity_value" columnCount="12" printOrder="Horizontal" pageWidth="371" pageHeight="555" orientation="Landscape" columnWidth="30" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8eaa2aa4-edc7-4288-850f-8d81e72678f7">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="padd">
+		<box leftPadding="2" rightPadding="2"/>
+	</style>
+	<parameter name="item" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT bnes.quantity FROM bne_schedule bnes
+ WHERE bnes.id_bne_item = $P{item}
+ ORDER BY bnes.id]]>
+	</queryString>
+	<field name="quantity" class="java.lang.Double"/>
+	<detail>
+		<band height="12">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="padd" mode="Transparent" x="0" y="0" width="30" height="12" uuid="ac474c2d-dbdd-4cf4-b4f0-a566c689eac6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

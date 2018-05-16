@@ -1,0 +1,253 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh"  rel="tooltip" data-placement="bottom" data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>MEF</li><li>Programas Presupuestales</li>
+        </ol>
+        <!-- end breadcrumb -->
+
+        <!-- You can also add more buttons to the
+        ribbon for further usability
+
+        Example below:
+
+        <span class="ribbon-button-alignment pull-right">
+        <span id="search" class="btn btn-ribbon hidden-xs" data-title="search"><i class="fa-grid"></i> Change Grid</span>
+        <span id="add" class="btn btn-ribbon hidden-xs" data-title="add"><i class="fa-plus"></i> Add</span>
+        <span id="search" class="btn btn-ribbon" data-title="search"><i class="fa-search"></i> <span class="hidden-mobile">Search</span></span>
+        </span> -->
+
+    </div>
+    <!-- END RIBBON -->
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+
+        <div class="inbox-nav-bar no-content-padding">
+
+            <h1 class="page-title txt-color-blueDark w animated fadeInDown fast" style="width: auto"><strong>#{viewBudgetProgramBean.selected.code}</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+            </h1>
+
+
+            <div class="inbox-checkbox-triggered">
+                <h:form>
+                    <div class="btn-group">
+                        <p:commandLink process="@this" update=":main" styleClass="btn btn-default">
+                            <strong><i class="fa fa-list"></i></strong>
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/budget_program.xhtml" />
+                        </p:commandLink>
+                        <p:commandLink process="@this" update=":main" styleClass="btn btn-default">
+                            <strong><i class="fa fa-edit fa-lg text-warning"></i></strong>
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/budget_program.xhtml" />
+                            <f:setPropertyActionListener target="#{managedBudgetProgramBean.idSelected}" value="#{viewBudgetProgramBean.currentId}" />
+                        </p:commandLink>
+                        <p:commandLink styleClass="deletebutton btn btn-default">
+                            <strong><i class="fa fa-trash-o fa-lg text-danger"></i></strong>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+
+            </div>
+
+            <a href="javascript:void(0);" id="compose-mail-mini" class="btn btn-primary pull-right hidden-desktop visible-tablet"> <strong><i class="fa fa-file fa-lg"></i></strong> </a>
+
+            <div class="btn-group pull-right inbox-paging">
+                <h:form>
+                    <p:commandLink process="@this" update=":main" action="#{viewBudgetProgramBean.previous()}" styleClass="btn btn-default btn-sm" disabled="#{not viewBudgetProgramBean.existPrevious}">
+                        <strong><i class="fa fa-chevron-left"></i></strong>
+                    </p:commandLink>
+                    <p:commandLink process="@this" update=":main" action="#{viewBudgetProgramBean.next()}" styleClass="btn btn-default btn-sm" disabled="#{not viewBudgetProgramBean.existNext}">
+                        <strong><i class="fa fa-chevron-right"></i></strong>
+                    </p:commandLink>
+                </h:form>
+            </div>
+            <span class="pull-right"><strong>#{viewBudgetProgramBean.rowNumber}</strong> of <strong>#{viewBudgetProgramBean.rowCount}</strong></span>
+
+        </div>
+
+        <div id="inbox-content" class="inbox-body no-content-padding animated fast fadeInRight">
+            <h:form>
+                <div class="inbox-side-bar">
+
+                    <p:commandLink update=":main" process="@this" action="#{managedBudgetProgramBean.create()}" id="compose-mail" styleClass="btn btn-primary btn-block"> 
+                        <strong>Crear Nuevo</strong> 
+                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/budget_program.xhtml" />
+                    </p:commandLink>
+
+                    <h6> Datos </h6>
+
+                    <ul class="inbox-menu-lg">
+                        <li class="active">
+                            <a href="javascript:void(0);">Información Basica </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Auditoría</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Prod/Proy relacionados</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Descargas</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </h:form>
+            <div class="table-wrap custom-scroll">
+                <table class="table eg-1">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h3>Información Basica</h3>
+                                <p><strong>Código : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{viewBudgetProgramBean.selected.code}</p>
+                                <p><strong>Nombre : </strong>&nbsp;&nbsp;&nbsp;#{viewBudgetProgramBean.selected.name}</p>
+                            </td>
+                        </tr>
+                        <tr  id="auditory">
+                            <td>
+                                <h3>Auditoria</h3>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <p>Creado por <i class="text-info" style="cursor: pointer">#{viewBudgetProgramBean.userCreated}</i> el <h:outputText value="#{viewBudgetProgramBean.selected.createDate}"><f:convertDateTime pattern="dd/MM/YYYY 'a las' hh:mm:ss a"/></h:outputText></p>
+                                    </div>
+                                    <h:panelGroup rendered="#{viewBudgetProgramBean.userEdited ne null}" layout="block" class="col-xs-6 text-right">
+                                        <p>Ultima edición por <i class="text-info" style="cursor: pointer">#{viewBudgetProgramBean.userEdited}</i> el <h:outputText value="#{viewBudgetProgramBean.selected.editDate}"><f:convertDateTime pattern="dd/MM/YYYY 'a las' hh:mm:ss a"/></h:outputText></p>
+                                    </h:panelGroup>
+                                </div>
+                                <h6>Otras ediciones</h6>
+                                <div class="row padding-left-lg">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-condensed table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-xs-9">Usuario</th>
+                                                    <th class="col-xs-3">Fecha de edición</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="text-muted">
+                                                    <td colspan="2">
+                                                        <h3>Ninguna edición adicional</h3>
+                                                    </td>
+                                                </tr>
+
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h3>Productos / Proyectos relacionados</h3>
+                                <div class="row padding-left-lg">
+                                    <h:form>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered table-condensed table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-xs-1 text-center">Codigo</th>
+                                                        <th class="col-xs-10">Nombre</th>
+                                                        <th class="col-xs-1 text-center">Nro act.</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ui:repeat value="#{viewBudgetProgramBean.pbpData}" var="item">
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                <p:commandLink process="@this" update=":main" action="#{viewProductBudgetProgramBean.begin(item[0])}">
+                                                                    #{item[1]} <i class="fa  fa-sign-out"/>
+                                                                    <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{viewProductBudgetProgramBean}" />
+                                                                    <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/view/product_budget_program.xhtml" />
+                                                                </p:commandLink>
+                                                            </td>
+                                                            <td>#{item[2]}</td>
+                                                            <td class="text-center">#{item[3]}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </tbody>
+                                                <ui:fragment rendered="#{empty viewBudgetProgramBean.pbpData}">
+                                                    <tfoot>
+                                                        <tr class="text-muted">
+                                                            <td colspan="3">
+                                                                <h3>Ningún Producto / proyecto</h3>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </ui:fragment>
+                                            </table>
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3>Descargas</h3>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <a class="btn btn-primary">
+                                            <span class="fa fa-download"/> Descargar esta ficha
+                                        </a>
+                                        <a class="btn btn-info">
+                                            <span class="fa fa-download"/> Descargar articulación MEF
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--
+                        <div class="inbox-footer">
+            
+                            <div class="row">
+            
+                                <div class="col-xs-6 col-sm-1">
+            
+                                    <div class="txt-color-white hidden-desktop visible-mobile">
+                                        3.5GB of <strong>10GB</strong>
+            
+                                        <div class="progress progress-micro">
+                                            <div class="progress-bar progress-primary" style="width: 34%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <div class="col-xs-6 col-sm-11 text-right">
+                                    <div class="txt-color-white inline-block">
+                                        <i class="txt-color-blueLight hidden-mobile">Last account activity <i class="fa fa-clock-o"></i> 52 mins ago |</i> Displaying <strong>44 of 259</strong>
+                                    </div>
+                                </div>
+            
+                            </div>
+            
+                        </div>-->
+
+        </div>
+
+
+    </div>
+    <!-- END MAIN CONTENT --></ui:composition>
+

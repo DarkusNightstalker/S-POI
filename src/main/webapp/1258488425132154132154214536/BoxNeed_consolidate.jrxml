@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Dependency_annual_info" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3486e780-bb21-44d2-8ceb-6f8cec787d19">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$V{group1}]]></conditionExpression>
+			<style forecolor="#FFFFFF" backcolor="#404040"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="path_generic" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM
+(
+	SELECT
+	s.c_path,
+	s.c_id,
+	S.d_id,
+	s.c_name,
+	s.c_generic,
+	s.c_generic_name,
+	s.d_operational,
+	s.d_name,
+	s.d_path,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '00') as RO,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '09') as RDR,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '13') as DyT,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '18') as RD,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '07') as RDR_A_RO,
+	(SELECT SUM(bi.total) FROM bne_item_total bi join poi_activity poia on poia.id = bi.id_poi_activity join poi poi on poi.id = poia.id_poi join funding_source fs on bi.id_funding_source = fs.id join dependency d_ on d_.id = poi.id_dependency WHERE d_.path like s.d_path||'%' AND poia.active AND bi.active AND bi.id_classifier = s.c_id AND poi.year = $P{year} AND fs.code LIKE '88') as NoP
+	from (
+			select * from
+				(
+					SELECT
+					d__.id as d_id,
+					d__.operational as d_operational,
+					d__.active as d_active,
+					d__.path as d_path,
+					d__.name as d_name
+					FROM dependency d__
+					WHERE
+						d__.operational
+						AND (
+								SELECT
+								SUM(bi.total)
+								FROM bne_item_total bi
+								join poi_activity poia
+								on poia.id = bi.id_poi_activity
+								join poi poi
+								on poi.id = poia.id_poi
+								join funding_source fs
+								on bi.id_funding_source = fs.id
+								join dependency d_
+								on d_.id = poi.id_dependency
+								WHERE
+									d_.path like d__.path||'%' AND
+									poi.year = $P{year} AND
+									bi.active AND
+									poia.active
+							) is NOT null
+				) d
+			cross join
+			(
+				select
+				c_.id as c_id,
+				c_.path as c_path,
+				c_.name as c_name,
+				substr(c_.path,0,3) as c_generic,
+				(
+					select c__.name from classifier c__ where c__.path = substr(c_.path,0,3)
+				) as c_generic_name
+				from classifier c_
+				where c_.id_classifier_type = 6
+			) c
+		) s
+	WHERE
+	s.d_active
+	order by s.d_id,s.c_generic,s.c_id
+) as q
+WHERE (coalesce(q.RO,0)+coalesce(q.RDR,0)+coalesce(q.DyT,0)+coalesce(q.RD,0)+coalesce(q.RDR_A_RO,0)+coalesce(q.NoP,0)) != 0;]]>
+	</queryString>
+	<field name="c_path" class="java.lang.String"/>
+	<field name="c_id" class="java.lang.Long"/>
+	<field name="d_id" class="java.lang.Integer"/>
+	<field name="c_name" class="java.lang.String"/>
+	<field name="c_generic" class="java.lang.String"/>
+	<field name="c_generic_name" class="java.lang.String"/>
+	<field name="d_operational" class="java.lang.Boolean"/>
+	<field name="d_name" class="java.lang.String"/>
+	<field name="d_path" class="java.lang.String"/>
+	<field name="ro" class="java.lang.Double"/>
+	<field name="rdr" class="java.lang.Double"/>
+	<field name="dyt" class="java.lang.Double"/>
+	<field name="rd" class="java.lang.Double"/>
+	<field name="rdr_a_ro" class="java.lang.Double"/>
+	<field name="nop" class="java.lang.Double"/>
+	<variable name="sum_ro" class="java.lang.Double" resetType="Group" resetGroup="specific" calculation="Sum">
+		<variableExpression><![CDATA[$F{ro}]]></variableExpression>
+	</variable>
+	<variable name="sum_rdr" class="java.lang.Double" resetType="Group" resetGroup="specific" calculation="Sum">
+		<variableExpression><![CDATA[$F{rdr}]]></variableExpression>
+	</variable>
+	<variable name="sum_dyt" class="java.lang.Double" resetType="Group" resetGroup="specific" calculation="Sum">
+		<variableExpression><![CDATA[$F{dyt}]]></variableExpression>
+	</variable>
+	<variable name="sum_rd" class="java.lang.Double" resetType="Group" resetGroup="specific" calculation="Sum">
+		<variableExpression><![CDATA[$F{rd}]]></variableExpression>
+	</variable>
+	<variable name="sum_ro_1" class="java.lang.Double" resetType="Group" resetGroup="generic" calculation="Sum">
+		<variableExpression><![CDATA[$F{ro}]]></variableExpression>
+	</variable>
+	<variable name="sum_rdr_1" class="java.lang.Double" resetType="Group" resetGroup="generic" calculation="Sum">
+		<variableExpression><![CDATA[$F{rdr}]]></variableExpression>
+	</variable>
+	<variable name="sum_dyt_1" class="java.lang.Double" resetType="Group" resetGroup="generic" calculation="Sum">
+		<variableExpression><![CDATA[$F{dyt}]]></variableExpression>
+	</variable>
+	<variable name="sum_rd_1" class="java.lang.Double" resetType="Group" resetGroup="generic" calculation="Sum">
+		<variableExpression><![CDATA[$F{rd}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="generic">
+		<groupExpression><![CDATA[$F{d_id}]]></groupExpression>
+		<groupHeader>
+			<band height="32">
+				<textField>
+					<reportElement uuid="e1ccd328-264d-4c46-b282-4122bbf111cb" mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#FFFFFF" backcolor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph leftIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{d_path}+" "+$F{d_name}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="2a642664-5689-4c22-b252-5709fce5e0d5" x="0" y="23" width="555" height="1"/>
+					<graphicElement>
+						<pen lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="28d0522f-3edd-4dc6-a231-7317151a215c" x="0" y="27" width="555" height="1"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="35">
+				<staticText>
+					<reportElement uuid="bad77e0c-0740-4461-9b77-cde6828c0a4c" mode="Opaque" x="305" y="0" width="250" height="20" forecolor="#FFFFFF" backcolor="#222222"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL DEPENDENCIA]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="427eb8f8-29fb-41fd-9718-5ecd7fc721ae" x="455" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_rd_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="a776f005-70d2-416e-b301-63ac794d0052" x="505" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($V{sum_ro_1} == null ? 0 :$V{sum_ro_1})+($V{sum_rdr_1} == null ? 0 :$V{sum_rdr_1})+($V{sum_dyt_1} == null ? 0 :$V{sum_dyt_1})+($V{sum_rd_1} == null ? 0 :$V{sum_rd_1})]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="21ee5763-497a-4dde-ba71-066d65f06388" x="305" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_ro_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="94f317e3-d15d-4ab2-be97-9efcc1d896ad" x="355" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_rdr_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="291fe4ad-cb50-46b8-9875-0cf693d17d37" x="405" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_dyt_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="specific">
+		<groupExpression><![CDATA[$F{c_generic}]]></groupExpression>
+		<groupHeader>
+			<band height="38">
+				<textField>
+					<reportElement uuid="ef701072-833e-4014-aae1-401822b04d55" x="0" y="0" width="332" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{c_generic}+" "+$F{c_generic_name}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="2592c8f8-53a2-44e9-b612-e2be6ed7dcac" x="305" y="23" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="98b54a63-2431-4126-a52a-9f29923baf1d" x="355" y="23" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RDR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="f90960b2-399b-49f5-b12f-1cad74e20125" x="405" y="23" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DyT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="3e98c802-8f2a-407d-8a50-5e514088361f" x="455" y="23" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="b8c7be4d-85e8-4780-b5fa-b2207e8e1460" x="505" y="23" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="40">
+				<staticText>
+					<reportElement uuid="e37d0117-424d-44cf-83b7-1094ac9d2af3" mode="Opaque" x="305" y="0" width="250" height="20" forecolor="#FFFFFF" backcolor="#222222"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL GENERICA]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="abd7044f-0699-4fe9-b480-81d9f1ca2c39" x="305" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_ro}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="9adc82ac-b7cc-4458-aded-109883e5ffe8" x="355" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_rdr}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="d0c02058-0529-47b9-bb44-c98517beec53" x="405" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_dyt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="8ff5fa6f-f95f-40aa-bf83-f39adfc05a82" x="455" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_rd}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="ee7d5834-ceaa-49e1-b6c3-8e04eb7c83e2" x="505" y="20" width="50" height="15"/>
+					<box>
+						<pen lineWidth="0.75"/>
+						<topPen lineWidth="0.75"/>
+						<leftPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+						<rightPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+						<paragraph rightIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($V{sum_ro} == null ? 0 :$V{sum_ro})+($V{sum_rdr} == null ? 0 :$V{sum_rdr})+($V{sum_dyt} == null ? 0 :$V{sum_dyt})+($V{sum_rd} == null ? 0 :$V{sum_rd})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="61" splitType="Stretch">
+			<textField>
+				<reportElement uuid="c07d621f-e2b1-4588-b920-5b46c974d9d9" x="0" y="28" width="555" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INFORME DE FINANCIAMIENTO DE DEPENDENCIAS - "+$P{year}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="56e3464f-54a1-4e5c-b8bd-f0af546eb7b5" x="0" y="0" width="261" height="15"/>
+				<textElement/>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="277dd637-2802-4fe1-ae94-8d6ab6803134" x="305" y="0" width="250" height="20"/>
+				<textElement textAlignment="Right" markup="none"/>
+				<textFieldExpression><![CDATA["Fecha : "+ new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="ad0b150a-5724-432f-9913-3c9fb71db37d" stretchType="RelativeToTallestObject" x="0" y="0" width="79" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_path}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="77749612-f156-43e4-8f9d-19f11b6fafd4" positionType="Float" stretchType="RelativeToTallestObject" x="79" y="0" width="226" height="15" isPrintWhenDetailOverflows="true"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5">
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="2a3bf2c8-6e25-47e4-bf92-9b7859f1a5cf" stretchType="RelativeToTallestObject" x="305" y="0" width="50" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="184f1dba-b16b-48bc-b64b-0dae9b701536" stretchType="RelativeToTallestObject" x="355" y="0" width="50" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rdr}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="c3ca69e2-4542-48f4-825c-bacaa57c2592" stretchType="RelativeToTallestObject" x="405" y="0" width="50" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dyt}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="62919d01-6d37-4bda-a8ed-d98e3957a139" stretchType="RelativeToTallestObject" x="455" y="0" width="50" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rd}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="fdcbab01-9bac-4164-a75d-0ec27a6df552" stretchType="RelativeToTallestObject" x="505" y="0" width="50" height="15" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ro} == null ? 0 : $F{ro}) +($F{rdr} == null ? 0 : $F{rdr})+($F{dyt}  == null ? 0 : $F{dyt})+($F{rd}  == null ? 0 : $F{dyt})+($F{rdr_a_ro}  == null ? 0 : $F{rdr_a_ro})+($F{nop}  == null ? 0 : $F{nop})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="96" splitType="Stretch">
+			<textField>
+				<reportElement uuid="3f2323b2-18f2-48cc-929b-42d8e248b2a9" x="720" y="0" width="82" height="23"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

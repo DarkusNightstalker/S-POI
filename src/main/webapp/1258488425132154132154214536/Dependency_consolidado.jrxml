@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Dependency_consolidado" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="edb6532f-48f0-4438-8b92-e5d812ce3645">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="90"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+DISTINCT on (fs.id,d.id,abp.id,c.id,poia.id)
+fs.code as f_code,d.path as d_path,abp.code as abp_code,poia.code as poia_code,d.name,c.path as c_path,
+
+(select SUM(bs_.quantity*bi_.unit_price) from bne_schedule bs_
+join bne_item bi_ on bs_.id_bne_item = bi_.id
+join poi_activity poia_ on bi_.id_poi_activity = poia_.id
+join funding_source fs_ on bi_.id_funding_source = fs_.id
+join activity_budget_program abp_ on poia_.id_activity_budget_program = abp_.id
+join classifier c_ on c_.id = bi_.id_classifier
+join poi poi_ on poi_.id = poia_.id_poi
+where fs_.id = fs.id AND poi_.id =poi.id AND abp_.id = abp.id AND c_.id=c.id AND poia_.id = poia.id
+)
+from bne_item bi join poi_activity poia on bi.id_poi_activity = poia.id
+join funding_source fs on bi.id_funding_source = fs.id
+join activity_budget_program abp on poia.id_activity_budget_program = abp.id
+join classifier c on c.id = bi.id_classifier
+join poi poi on poi.id = poia.id_poi
+join dependency d on d.id = poi.id_dependency
+where poi.year = $P{year}]]>
+	</queryString>
+	<field name="f_code" class="java.lang.String"/>
+	<field name="d_path" class="java.lang.String"/>
+	<field name="abp_code" class="java.lang.String"/>
+	<field name="poia_code" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="c_path" class="java.lang.String"/>
+	<field name="sum" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="92eef3e7-a436-42bc-8a3a-094fe1605bd3" x="0" y="0" width="44" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FTEFTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3f2ba2d9-099d-401f-a64f-91de3dfa3cc4" x="44" y="0" width="83" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TAREA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a35e9d88-5e23-4e17-a19e-7d4e597899e5" x="127" y="0" width="79" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NUMRCCA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bdb18339-8ace-4153-81c7-c825b9a33242" x="279" y="0" width="128" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROYECTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a30617ea-c2a6-44f6-b150-5dcf2274d0d1" x="206" y="0" width="73" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CORRELATIVE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="25aa97c1-0319-4111-9e0c-7cd84596e399" x="471" y="0" width="84" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARTIDA]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="03df9447-15d4-43fd-a586-4c442b2c677f" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="44" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{f_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="78acd49a-ed33-4a6b-b474-884a8e4eeca5" positionType="Float" stretchType="RelativeToTallestObject" x="44" y="0" width="83" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{d_path}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="571692f7-cb3f-4a16-bdaa-86710591141f" positionType="Float" stretchType="RelativeToTallestObject" x="127" y="0" width="79" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{abp_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e6c4420b-112f-4b08-a32f-056ee6d7d003" positionType="Float" stretchType="RelativeToTallestObject" x="279" y="0" width="128" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="428d5048-0ba1-4c50-8f66-9cf88554b5fc" positionType="Float" stretchType="RelativeToTallestObject" x="206" y="0" width="73" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{poia_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2bc3495a-a512-4bac-8755-26954de50676" positionType="Float" stretchType="RelativeToTallestObject" x="471" y="0" width="84" height="20" isPrintWhenDetailOverflows="true"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_path}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

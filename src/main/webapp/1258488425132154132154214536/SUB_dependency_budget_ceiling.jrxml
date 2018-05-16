@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Dependency_annual_info" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3486e780-bb21-44d2-8ceb-6f8cec787d19">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<subDataset name="DataSet" uuid="4e9f2894-3a4d-4e8d-b108-7e41e64f9fb9">
+		<parameter name="id_classifier" class="java.lang.Long">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="year" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELEcT bc.*, fs.code as fs_code,fs.abbr as fs_name,d.path as d_code, d.name as d_name  FROM budget_ceiling bc join funding_source fs on
+bc.id_funding_source = fs.id
+join
+dependency d
+on bc.id_dependency = d.id
+where bc.id_classifier = $P{id_classifier} and bc.year = $P{year}
+order by d.path]]>
+		</queryString>
+		<field name="id" class="java.lang.Long"/>
+		<field name="id_dependency" class="java.lang.Integer"/>
+		<field name="id_funding_source" class="java.lang.Integer"/>
+		<field name="id_classifier" class="java.lang.Long"/>
+		<field name="year" class="java.lang.Integer"/>
+		<field name="quantity" class="java.lang.Double"/>
+		<field name="fs_code" class="java.lang.String"/>
+		<field name="fs_name" class="java.lang.String"/>
+		<field name="d_code" class="java.lang.String"/>
+		<field name="d_name" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="operational" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\CTIC\\Downloads\\S-POI_beta\\src\\main\\webapp\\1258488425132154132154214536\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_classifier" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+bc.quantity,d.operational, d.name as d_name,d.path as d_code, fs.code as fs_code, fs.abbr as f_name
+from budget_ceiling bc
+join dependency d
+on d.id = bc.id_dependency
+join funding_source fs
+on  fs.id = bc.id_funding_source
+WHERE bc.year = $P{year}  AND bc.id_classifier = $P{id_classifier} and fs.active
+UNION ALL
+select null as quantity,d1.operational,d1.name,d1.path,fs.code,fs.abbr from dependency d1
+cross join
+funding_source fs
+where d1.id not in (select
+bc.id_dependency from budget_ceiling bc WHERE bc.year = 2017) and fs.active
+order by d_code]]>
+	</queryString>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="operational" class="java.lang.Boolean"/>
+	<field name="d_name" class="java.lang.String"/>
+	<field name="d_code" class="java.lang.String"/>
+	<field name="fs_code" class="java.lang.String"/>
+	<field name="f_name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="159" splitType="Stretch">
+			<crosstab>
+				<reportElement uuid="cf96263e-3536-4be3-a968-a4e66e1206ef" x="0" y="0" width="555" height="159"/>
+				<rowGroup name="d_code" width="70" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{d_code}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="72c72a08-4285-42f7-9a63-0c4163a48912" style="Crosstab Data Text" x="0" y="0" width="70" height="25"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$V{d_code}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="12010b08-2a34-4b90-a168-47dc6549fff6" x="0" y="0" width="70" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total d_code]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="fs_code" height="30" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{fs_code}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="99a5a205-feb8-41de-a237-12c1cb7fa137" style="Crosstab Data Text" x="0" y="0" width="50" height="30"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$V{fs_code}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="15cd7c17-708c-48f5-9ca1-819e0aa06fd7" x="0" y="0" width="50" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total fs_code]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="quantityMeasure" class="java.lang.Double" calculation="Sum">
+					<measureExpression><![CDATA[$F{quantity}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="94fe5e82-68de-4d48-909f-2a18739e630e" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="d_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="f4210ea0-ad66-4764-a39b-5850c401d4a1" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="fs_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="2c026337-76e4-48e3-b510-3ba15bb401c4" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="d_code" columnTotalGroup="fs_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="f8ce11b8-e15e-4f5f-b414-ac7890a66c72" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="611" splitType="Stretch"/>
+	</detail>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement uuid="3f2323b2-18f2-48cc-929b-42d8e248b2a9" x="720" y="0" width="82" height="23"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

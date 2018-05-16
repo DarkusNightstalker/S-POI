@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <div id="ribbon">
+        <span class="ribbon-button-alignment"> 
+            <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh" rel="tooltip" data-placement="bottom"  data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+        <ol class="breadcrumb">
+            <li>Inicio</li>
+        </ol>
+    </div>
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-7 col-md-7 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa-fw fa fa-home">
+                    </i> Sistema de Integración de Información para el Plan Operativo
+                </h1>
+            </div>
+        </div>
+
+        <section id="widget-grid" class="">
+            <div class="row">
+                <article class="col-sm-12" >
+                    <img width="100%"  src="#{request.contextPath}/img/banner.jpg"/>
+                </article>
+            </div>
+            <ui:fragment rendered="#{not sessionBean.superAdmin}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <hr class="short"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <article class="col-sm-12">
+                        <ui:repeat value="#{homeBean.classifiers}" var="classifier" varStatus="st">
+                            <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                                <header>
+                                    <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-white"></i> </span>
+                                    <h2>ESTADISTICAS - #{classifier.name}</h2>
+                                </header>
+                                <div class="no-padding">
+                                    <div class="jarviswidget-editbox">
+                                    </div>
+                                    <div class="widget-body">
+                                        <div id="myTabContent" class="tab-content">
+                                            <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
+                                                <h:form id="form-ceiling-#{st.index}">
+                                                    <script>
+                                                        $(function () {
+                                                            var d = #{homeBean.buildMonthChartData(classifier)};
+                                                            Home.plot(#{st.index},d);
+                                                        });
+                                                    </script>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                                            <div id="updating-chart-#{st.index}" class="chart-large txt-color-blue"></div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 show-stats">
+                                                            <div class="row">
+                                                                <ui:repeat value="#{homeBean.fundingSources}" var="fs">
+                                                                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12"> 
+                                                                        <span class="text"> #{fs.abbr} <i jsf:rendered="#{homeBean.ceiling.getBy(fs,classifier).quantity.doubleValue() eq 0}" class="text-danger fa fa-warning"/>
+                                                                            <span class="pull-right txt-color-greenDark"> 
+                                                                                <h:outputText value="#{homeBean.expected.getBy(fs,classifier)['quantity']}">
+                                                                                    <f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
+                                                                                </h:outputText> / <h:outputText value="#{homeBean.ceiling.getBy(fs,classifier).quantity}">
+                                                                                    <f:convertNumber maxFractionDigits="2"  minFractionDigits="2"/>
+                                                                                </h:outputText>
+                                                                            </span> 
+                                                                        </span>
+                                                                        <div class="progress">                                                                     
+                                                                            <div jsf:rendered="#{homeBean.ceiling.getBy(fs,classifier).quantity.doubleValue() ne 0}" class="progress-bar bg-color-greenLight" style="width: #{(homeBean.expected.getBy(fs,classifier)['quantity']*100)/homeBean.ceiling.getBy(fs,classifier).quantity}%;">
+                                                                            </div>      
+                                                                        </div>
+                                                                    </div>
+                                                                </ui:repeat>
+                                                                <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12"> 
+                                                                    <span class="text"> TOTAL 
+                                                                        <span class="pull-right txt-color-greenDark">s/. 
+                                                                            <h:outputText value="#{homeBean.ceiling.budgetCeilingsTotal[classifier.id]}">
+                                                                                <f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
+                                                                            </h:outputText>
+                                                                        </span> 
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </article>
+                </div>
+
+            </ui:fragment>
+        </section>
+    </div>
+
+    <script src="#{request.contextPath}/js/pages/home.js"></script>
+</ui:composition>

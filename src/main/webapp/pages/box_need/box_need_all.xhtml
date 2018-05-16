@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/report_view.js"/>
+    <script src="#{request.contextPath}/js/pages/poi_view.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh"  rel="tooltip" data-placement="bottom" data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>POI</li><li>Todos</li>
+        </ol>
+
+    </div>
+
+    <div id="content">
+
+        <div class="inbox-nav-bar no-content-padding">
+
+            <h1 class="page-title txt-color-blueDark w animated fadeInDown fast" style="width: auto"><strong>Escoja una dependencia</strong>
+            </h1>
+
+            <div class="inbox-checkbox-triggered">
+                <h:form>
+                    <div class="btn-group">
+                        <p:commandLink process="@this" update=":chooser-form" styleClass="btn btn-default" oncomplete="$('#modal-chooser').modal({backdrop:'static',keyboard:false})" action="#{boxNeedBean.refresh()}">
+                            <strong><i class="fa fa-search fa-lg text-warning"></i></strong>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <div class="modal fade" id="modal-chooser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/>Escoger una dependencia </h4>
+                </div>
+                <h:form id="chooser-form" >
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Dependencia</label>
+                                <div class="col-md-10">
+                                    <script>
+                                        $(function(){
+                                           $("#chooser-form\\:dependency").select2({
+                                               width:'100%',
+                                               placeholder : 'Escoja una dependencia'
+                                           }) 
+                                        });
+                                    </script>
+                                    <h:selectOneMenu id="dependency" value="#{boxNeedBean.selected}">
+                                        <f:selectItem/>
+                                        <f:selectItems
+                                            value="#{boxNeedBean.dependencies}" var="item" itemValue="#{item['id']}" itemLabel="#{item['name']}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink action="#{boxNeedBean.begin()}" update=":main" onstart="$('#modal-chooser .close').trigger('click')"   styleClass="btn btn-info">
+                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{viewBNeedBean}" />
+                            Ver
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <script>
+        $(function(){
+            $("#modal-chooser").modal({backdrop:'static',keyboard:false})
+        })
+    </script>
+</ui:composition>
+

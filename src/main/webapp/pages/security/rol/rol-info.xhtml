@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/profile.js"/>
+    <div class="modal fade" id="modal-change" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-info"/> Información de rol </h4>
+                </div>
+                <h:form id="form-rol-info" >
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group form-group-sm">
+                                <label class="control-label col-md-3">Código</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static input-sm">#{rolInfoBean.rol.code}</p>
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label class="control-label col-md-3">Nombre</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static input-sm">#{rolInfoBean.rol.name}</p>
+                                </div>
+                            </div>
+                            <hr class="short"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p:commandLink process="@this" update=":main"  styleClass="btn btn-warning btn-xs">
+                            <i class="fa fa-edit"></i>
+                            Editar
+                            <f:setPropertyActionListener target="#{managedRolBean.idSelected}" value="#{rolInfoBean.rol.id}" />
+                            <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{managedRolBean}" />
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/security/managed/rol.xhtml" />
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

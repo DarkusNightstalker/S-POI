@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Dependency_annual_info" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3486e780-bb21-44d2-8ceb-6f8cec787d19">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$V{group1}]]></conditionExpression>
+			<style forecolor="#FFFFFF" backcolor="#404040"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="DataSet" uuid="4e9f2894-3a4d-4e8d-b108-7e41e64f9fb9">
+		<parameter name="id_classifier" class="java.lang.Long">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="year" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select
+bc.quantity,d.operational, d.name as d_name,d.path as d_code, fs.code as fs_code, fs.abbr as f_name
+from budget_ceiling bc
+join dependency d
+on d.id = bc.id_dependency
+join funding_source fs
+on  fs.id = bc.id_funding_source
+WHERE bc.year = $P{year}  AND bc.id_classifier = $P{id_classifier} and fs.active
+UNION ALL
+select null as quantity,d1.operational,d1.name,d1.path,fs.code,fs.abbr from dependency d1
+cross join
+funding_source fs
+where d1.id not in (select
+bc.id_dependency from budget_ceiling bc WHERE bc.year = 2017) and fs.active
+order by d_code]]>
+		</queryString>
+		<field name="quantity" class="java.lang.Double"/>
+		<field name="operational" class="java.lang.Boolean"/>
+		<field name="d_name" class="java.lang.String"/>
+		<field name="d_code" class="java.lang.String"/>
+		<field name="fs_code" class="java.lang.String"/>
+		<field name="f_name" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_classifier" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT id,path,name FROM classifier
+ WHERE id_classifier_type = 2 AND (id = cast($P{id_classifier} as bigint) OR $P{id_classifier} is null)]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="path" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="129" splitType="Stretch">
+			<textField>
+				<reportElement uuid="c07d621f-e2b1-4588-b920-5b46c974d9d9" x="0" y="42" width="555" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INFORME DE FINANCIAMIENTO DE CLASIFICADORES GENERICOS - "+$P{year}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="56e3464f-54a1-4e5c-b8bd-f0af546eb7b5" x="0" y="0" width="261" height="15"/>
+				<textElement/>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="277dd637-2802-4fe1-ae94-8d6ab6803134" x="305" y="0" width="250" height="20"/>
+				<textElement textAlignment="Right" markup="none"/>
+				<textFieldExpression><![CDATA["Fecha : "+ new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e1ccd328-264d-4c46-b282-4122bbf111cb" mode="Opaque" x="0" y="92" width="555" height="20" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{path}+" "+$F{name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="2a642664-5689-4c22-b252-5709fce5e0d5" x="0" y="116" width="555" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="28d0522f-3edd-4dc6-a231-7317151a215c" x="0" y="120" width="555" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="611" splitType="Stretch">
+			<crosstab>
+				<reportElement uuid="a54288f8-f00c-4241-894f-49b6834e84a3" x="0" y="0" width="555" height="611"/>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="DataSet" uuid="c8221854-c66b-42b6-89c2-787af20be96a">
+							<datasetParameter name="id_classifier">
+								<datasetParameterExpression><![CDATA[$F{id}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="year">
+								<datasetParameterExpression><![CDATA[$P{year}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="d_code" width="186" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{d_code}+"-"+$F{d_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque" style="Crosstab Data Text">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="95cfc207-44cd-451d-a159-2f24666645a9" style="Crosstab Data Text" x="0" y="0" width="70" height="25"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d_code}.split("-")[0]]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement uuid="1691a829-c3ce-4507-8115-a07087673242" style="Crosstab Data Text" x="70" y="0" width="116" height="25"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="7" isBold="false"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d_code}.split("-")[1]]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="b471cfc5-7640-4c50-b752-6f71fcf157ed" x="0" y="0" width="186" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="group1" width="0">
+					<bucket class="java.lang.Boolean">
+						<bucketExpression><![CDATA[$F{operational}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab Data Text"/>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="fs_code" height="30" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{fs_code}+"-"+$F{f_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="5a9dd46d-98ae-42ae-a47e-e50da769a1a5" style="Crosstab Data Text" x="0" y="0" width="50" height="15"/>
+								<textElement verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{fs_code}.split("-")[0]]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement uuid="d239a5a5-106a-48f9-8cbe-22c7eda58852" style="Crosstab Data Text" x="0" y="15" width="50" height="15"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="false"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{fs_code}.split("-")[1]]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="ebcfedde-5a11-45b4-999a-5c4188c60070" x="0" y="0" width="50" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="quantityMeasure" class="java.lang.Double" calculation="Sum">
+					<measureExpression><![CDATA[$F{quantity}]]></measureExpression>
+				</measure>
+				<crosstabCell width="53" height="25">
+					<cellContents mode="Opaque" style="Crosstab Data Text">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement uuid="c9f5b4b4-f855-414b-a7f6-faa3a35f8797" style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="50" height="25">
+								<printWhenExpression><![CDATA[$V{group1}]]></printWhenExpression>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="53" height="25" rowTotalGroup="d_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement uuid="d893623a-0322-4350-90a1-236cf2458366" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" height="25" columnTotalGroup="fs_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque" style="Crosstab Data Text">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement uuid="4b679df7-bffb-4dcc-a056-66fe89e24634" style="Crosstab Data Text" x="0" y="0" width="50" height="25">
+								<printWhenExpression><![CDATA[$V{group1}]]></printWhenExpression>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="d_code" columnTotalGroup="fs_code">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement uuid="2361ecb2-b0fd-4975-9ac4-1cd4bda7c3e0" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group1">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group1" columnTotalGroup="fs_code">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement uuid="3f2323b2-18f2-48cc-929b-42d8e248b2a9" x="720" y="0" width="82" height="23"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

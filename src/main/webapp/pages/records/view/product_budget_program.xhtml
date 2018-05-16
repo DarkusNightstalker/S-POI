@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- RIBBON -->
+    <div id="ribbon">
+
+        <span class="ribbon-button-alignment"> 
+            <span id="refresh" class="btn btn-ribbon" data-action="resetWidgets" data-title="refresh"  rel="tooltip" data-placement="bottom" data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>MEF</li><li>Productos/Proyectos Presupuestales</li>
+        </ol>
+        <!-- end breadcrumb -->
+
+        <!-- You can also add more buttons to the
+        ribbon for further usability
+
+        Example below:
+
+        <span class="ribbon-button-alignment pull-right">
+        <span id="search" class="btn btn-ribbon hidden-xs" data-title="search"><i class="fa-grid"></i> Change Grid</span>
+        <span id="add" class="btn btn-ribbon hidden-xs" data-title="add"><i class="fa-plus"></i> Add</span>
+        <span id="search" class="btn btn-ribbon" data-title="search"><i class="fa-search"></i> <span class="hidden-mobile">Search</span></span>
+        </span> -->
+
+    </div>
+    <!-- END RIBBON -->
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+
+        <div class="inbox-nav-bar no-content-padding">
+
+            <h1 class="page-title txt-color-blueDark w animated fadeInDown fast" style="width: auto"><strong>#{viewProductBudgetProgramBean.selected.code}</strong>&nbsp;&nbsp;&nbsp;
+            </h1>
+
+
+            <div class="inbox-checkbox-triggered">
+                <h:form>
+                    <div class="btn-group">
+                        <p:commandLink process="@this" update=":main" styleClass="btn btn-default">
+                            <strong><i class="fa fa-list"></i></strong>
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/product_budget_program.xhtml" />
+                        </p:commandLink>
+                        <p:commandLink process="@this" update=":main" styleClass="btn btn-default">
+                            <strong><i class="fa fa-edit fa-lg text-warning"></i></strong>
+                            <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/product_budget_program.xhtml" />
+                            <f:setPropertyActionListener target="#{managedProductBudgetProgramBean.idSelected}" value="#{viewProductBudgetProgramBean.currentId}" />
+                        </p:commandLink>
+                        <p:commandLink styleClass="deletebutton btn btn-default">
+                            <strong><i class="fa fa-trash-o fa-lg text-danger"></i></strong>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+
+            </div>
+
+            <a href="javascript:void(0);" id="compose-mail-mini" class="btn btn-primary pull-right hidden-desktop visible-tablet"> <strong><i class="fa fa-file fa-lg"></i></strong> </a>
+
+            <div class="btn-group pull-right inbox-paging">
+                <h:form>
+                    <p:commandLink process="@this" update=":main" action="#{viewProductBudgetProgramBean.previous()}" styleClass="btn btn-default btn-sm" disabled="#{not viewProductBudgetProgramBean.existPrevious}">
+                        <strong><i class="fa fa-chevron-left"></i></strong>
+                    </p:commandLink>
+                    <p:commandLink process="@this" update=":main" action="#{viewProductBudgetProgramBean.next()}" styleClass="btn btn-default btn-sm" disabled="#{not viewProductBudgetProgramBean.existNext}">
+                        <strong><i class="fa fa-chevron-right"></i></strong>
+                    </p:commandLink>
+                </h:form>
+            </div>
+            <span class="pull-right"><strong>#{viewProductBudgetProgramBean.rowNumber}</strong> de <strong>#{viewProductBudgetProgramBean.rowCount}</strong></span>
+
+        </div>
+
+        <div id="inbox-content" class="inbox-body no-content-padding animated fast fadeInRight">
+            <h:form>
+                <div class="inbox-side-bar">
+
+                    <p:commandLink update=":main" process="@this" action="#{viewProductBudgetProgramBean.create()}" id="compose-mail" styleClass="btn btn-primary btn-block"> 
+                        <strong>Crear Nuevo</strong> 
+                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/manage/product_budget_program.xhtml" />
+                    </p:commandLink>
+
+                    <h6> Datos </h6>
+
+                    <ul class="inbox-menu-lg">
+                        <li class="active">
+                            <a href="javascript:void(0);">Información Basica </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Auditoría</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Act. presup. relacionados</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">Descargas</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </h:form>
+            <div class="table-wrap custom-scroll">
+                <table class="table eg-1">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h3>Información Basica</h3>
+                                <p><strong>Código : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{viewProductBudgetProgramBean.selected.code}</p>
+                                <p><strong>Nombre : </strong>&nbsp;&nbsp;&nbsp;#{viewProductBudgetProgramBean.selected.name}</p>
+                            </td>
+                        </tr>
+                        <tr  id="auditory">
+                            <td>
+                                <h3>Auditoria</h3>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <p>Creado por <i class="text-info" style="cursor: pointer">#{viewProductBudgetProgramBean.userCreated}</i> el <h:outputText value="#{viewProductBudgetProgramBean.selected.createDate}"><f:convertDateTime pattern="dd/MM/YYYY 'a las' hh:mm:ss a"/></h:outputText></p>
+                                    </div>
+                                    <h:panelGroup rendered="#{viewProductBudgetProgramBean.userEdited ne null}" layout="block" class="col-xs-6 text-right">
+                                        <p>Ultima edición por <i class="text-info" style="cursor: pointer">#{viewProductBudgetProgramBean.userEdited}</i> el <h:outputText value="#{viewProductBudgetProgramBean.selected.editDate}"><f:convertDateTime pattern="dd/MM/YYYY 'a las' hh:mm:ss a"/></h:outputText></p>
+                                    </h:panelGroup>
+                                </div>
+                                <h6>Otras ediciones</h6>
+                                <div class="row padding-left-lg">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-condensed table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-xs-9">Usuario</th>
+                                                    <th class="col-xs-3">Fecha de edición</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="text-muted">
+                                                    <td colspan="2">
+                                                        <h3>Ninguna edición adicional</h3>
+                                                    </td>
+                                                </tr>
+
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h3>Actividades presupuestales relacionados</h3>
+                                <div class="row padding-left-lg">
+                                    <h:form>
+                                        <script>
+                                            $(function(){
+                                                $(".table-forum .table-forum .bp-link").removeClass("ui-commandlink").removeClass("ui-widget");
+                                            })
+                                        </script>
+                                        <ui:repeat value="#{viewProductBudgetProgramBean.bpData}" var="item">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped  table-condensed table-bordered table-hover table-forum">
+                                                    <thead>
+                                                        <tr>
+                                                            <td colspan="4"> 
+                                                                <table style="margin-bottom: 0px"  class="table table-hover table-striped table-forum">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="text-center" style="width: 40px;"><i class="fa fa-briefcase fa-2x text-muted"></i></td>
+                                                                            <td>
+                                                                                <h4>
+                                                                                    <p:commandLink styleClass="bp-link" process="@this" update=":main" action="#{viewBudgetProgramBean.begin(item[0])}"  >
+                                                                                        #{item[2]}
+                                                                                        <f:setPropertyActionListener target="#{sessionBean.loadable}" value="#{viewBudgetProgramBean}" />
+                                                                                        <f:setPropertyActionListener target="#{navigationBean.content}" value="/pages/records/view/budget_program.xhtml" />
+                                                                                    </p:commandLink>
+                                                                                    <small>#{item[1]}</small>
+                                                                                </h4>
+                                                                            </td>
+                                                                            <td class=" text-right">
+
+                                                                                <a class="btn btn-info">
+                                                                                    <span class="fa fa-download"/>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="col-xs-1 text-center"><strong>Codigo</strong></td>
+                                                            <td class="col-xs-9"><strong>Nombre</strong></td>
+                                                            <td class="col-xs-1 text-center"><strong>Sec. Func.</strong></td>
+                                                            <td class="col-xs-1 text-center"><strong>Nro obj. esp.</strong></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <ui:repeat value="#{viewProductBudgetProgramBean.abpMap[item[0]]}" var="item2">
+                                                            <tr>
+                                                                <td class="text-center" style="vertical-align: middle !important">
+                                                                    <p:commandLink onclick="alert('#{item2[2]}')">
+                                                                        #{item2[1]} <i class="fa  fa-sign-out"/>
+                                                                    </p:commandLink>
+                                                                </td>
+                                                                <td>#{item2[2]}</td>
+                                                                <td class="text-center">#{item2[3]}</td>
+                                                                <td class="text-center">#{item2[4]}</td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </tbody>
+                                                    <ui:fragment rendered="#{empty viewProductBudgetProgramBean.abpMap[item[0]]}">
+                                                        <tfoot>
+                                                            <tr class="text-muted">
+                                                                <td colspan="3">
+                                                                    <h3>Ningúna Actividad presupuestal</h3>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </ui:fragment>
+                                                </table>
+                                            </div>
+
+                                        </ui:repeat>
+                                    </h:form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3>Descargas</h3>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <a class="btn btn-primary">
+                                            <span class="fa fa-download"/> Descargar esta ficha
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--
+                        <div class="inbox-footer">
+            
+                            <div class="row">
+            
+                                <div class="col-xs-6 col-sm-1">
+            
+                                    <div class="txt-color-white hidden-desktop visible-mobile">
+                                        3.5GB of <strong>10GB</strong>
+            
+                                        <div class="progress progress-micro">
+                                            <div class="progress-bar progress-primary" style="width: 34%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <div class="col-xs-6 col-sm-11 text-right">
+                                    <div class="txt-color-white inline-block">
+                                        <i class="txt-color-blueLight hidden-mobile">Last account activity <i class="fa fa-clock-o"></i> 52 mins ago |</i> Displaying <strong>44 of 259</strong>
+                                    </div>
+                                </div>
+            
+                            </div>
+            
+                        </div>-->
+
+        </div>
+
+
+    </div>
+    <!-- END MAIN CONTENT --></ui:composition>
+

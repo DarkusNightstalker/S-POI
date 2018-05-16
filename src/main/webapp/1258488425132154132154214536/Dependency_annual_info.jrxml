@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Dependency_annual_info" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3486e780-bb21-44d2-8ceb-6f8cec787d19">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="table">
+		<box>
+			<topPen lineWidth="1.0" lineColor="#222222"/>
+			<bottomPen lineWidth="1.0" lineColor="#222222"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#222222">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#222222"/>
+			<bottomPen lineWidth="0.5" lineColor="#222222"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#E6CFCF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#222222"/>
+			<bottomPen lineWidth="0.5" lineColor="#222222"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#222222"/>
+			<bottomPen lineWidth="0.5" lineColor="#222222"/>
+		</box>
+	</style>
+	<subDataset name="Dataset BudgetCeiling" uuid="7cd331c1-1cbd-4089-a2c7-b656838def35">
+		<parameter name="id_dependency" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="year" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select bc.id_funding_source,bc.quantity,fs.abbr as fs_name,fs.code as fs_code,c.path as c_path,c.name as c_name from budget_ceiling bc right join funding_source fs on bc.id_funding_source = fs.id
+right join classifier c on bc.id_classifier = c.id
+where bc.id_dependency = $P{id_dependency} AND bc.year = $P{year}]]>
+		</queryString>
+		<field name="id_funding_source" class="java.lang.Integer"/>
+		<field name="quantity" class="java.lang.Double"/>
+		<field name="fs_name" class="java.lang.String"/>
+		<field name="fs_code" class="java.lang.String"/>
+		<field name="c_path" class="java.lang.String"/>
+		<field name="c_name" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="DataSet BudgetGoal" uuid="2362982b-8e64-4c25-adec-b6529dc8a07d">
+		<parameter name="id_dependency" class="java.lang.Integer" isForPrompting="false">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT abp.code,abp.name from dependency_has_abp d join activity_budget_program abp on
+d.id_abp = abp.id
+WHERE d.id_dependency = $P{id_dependency}]]>
+		</queryString>
+		<field name="code" class="java.lang.String"/>
+		<field name="name" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="operational" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="subreport" class="java.io.InputStream"/>
+	<queryString>
+		<![CDATA[SELECT d.id,d.path,d.name,
+(SELECT COUNT(*) FROM budget_ceiling bc WHERE bc.id_dependency = d.id AND bc.year = $P{year}) as contador from dependency d
+WHERE (d.operational = $P{operational} OR $P{operational} is null)
+ORDER BY d.path]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="path" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="contador" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="71" splitType="Stretch">
+			<textField>
+				<reportElement uuid="c07d621f-e2b1-4588-b920-5b46c974d9d9" x="0" y="42" width="802" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INFORME DE FINANCIAMIENTO DE DEPENDENCIAS - "+$P{year}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="56e3464f-54a1-4e5c-b8bd-f0af546eb7b5" x="0" y="0" width="291" height="15"/>
+				<textElement/>
+				<text><![CDATA[UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="277dd637-2802-4fe1-ae94-8d6ab6803134" x="414" y="0" width="388" height="20"/>
+				<textElement textAlignment="Right" markup="none"/>
+				<textFieldExpression><![CDATA["Fecha : "+ new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="421" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="db77b874-b14e-4a8f-8ea9-6cf47b0d8622" x="0" y="20" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codigo :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea09a647-9f08-4656-86f5-115b7329a332" mode="Opaque" x="0" y="154" width="802" height="267" forecolor="#FFFFFF" backcolor="#CCCCCC">
+					<printWhenExpression><![CDATA[$F{contador} == 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No se ha grabado ningun techo presupuestario]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="e1ccd328-264d-4c46-b282-4122bbf111cb" x="100" y="20" width="161" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{path}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="64954a21-8048-4d16-8136-81ce03b0e6ff" x="100" y="40" width="631" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="2a642664-5689-4c22-b252-5709fce5e0d5" x="0" y="4" width="802" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="28d0522f-3edd-4dc6-a231-7317151a215c" x="0" y="8" width="802" height="1"/>
+			</line>
+			<crosstab>
+				<reportElement uuid="6037e93d-e619-409e-a14e-d4cb1396a846" x="0" y="154" width="802" height="85">
+					<printWhenExpression><![CDATA[($F{contador} > 0)]]></printWhenExpression>
+				</reportElement>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="Dataset BudgetCeiling" uuid="a264b9b9-3b9a-49f3-97c7-c16a51ac64fd">
+							<datasetParameter name="id_dependency">
+								<datasetParameterExpression><![CDATA[$F{id}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="year">
+								<datasetParameterExpression><![CDATA[$P{year}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="id_classifier" width="370" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{c_path} + " " +$F{c_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#EEEEEE" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="634abe8d-de06-47b1-b6e6-130afba943ec" style="Crosstab Data Text" x="0" y="0" width="370" height="25"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="8"/>
+									<paragraph leftIndent="5"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{id_classifier}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#000000" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="7a8a6dc7-62e3-4d74-8d04-7d86e0fc1c67" x="0" y="0" width="370" height="25" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="id_funding_source" height="30" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA["("+$F{fs_code}+") - "+$F{fs_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#EEEEEE" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="f75c2b01-afe6-4359-8bda-a0e31bec7027" style="Crosstab Data Text" x="0" y="0" width="61" height="30"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+									<paragraph rightIndent="5"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{id_funding_source}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#000000" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="ae01cedf-4c57-4eba-9942-3b12d5c55418" x="0" y="0" width="60" height="30" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="quantityMeasure" class="java.lang.Integer" calculation="Sum">
+					<measureExpression><![CDATA[$F{quantity}]]></measureExpression>
+				</measure>
+				<crosstabCell width="61" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###,##0.00">
+							<reportElement uuid="3d162ad4-8ab8-4ca1-bc20-96ae8eb80bb9" style="Crosstab Data Text" x="0" y="0" width="61" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="61" height="25" rowTotalGroup="id_classifier">
+					<cellContents backcolor="#666666" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###,##0.00">
+							<reportElement uuid="9cd246c8-d173-4ea9-9582-bab64fe60a76" style="Crosstab Data Text" x="0" y="0" width="61" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="25" columnTotalGroup="id_funding_source">
+					<cellContents backcolor="#666666" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###,##0.00">
+							<reportElement uuid="412f7127-3f2e-495b-91f1-a890ee6bfc5f" style="Crosstab Data Text" x="0" y="0" width="60" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="25" rowTotalGroup="id_classifier" columnTotalGroup="id_funding_source">
+					<cellContents backcolor="#000000" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###,##0.00">
+							<reportElement uuid="f8fdda59-d691-4711-a117-997809c7c2c6" style="Crosstab Data Text" x="0" y="0" width="60" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8" isBold="true"/>
+								<paragraph rightIndent="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{quantityMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+			<staticText>
+				<reportElement uuid="49a96198-89d1-4afd-af84-c0266b4f9cfd" x="0" y="40" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dependencia :]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement uuid="1983d707-7e10-45b4-b6d0-27e8d0aced57" key="table" style="table" x="0" y="96" width="802" height="58"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="DataSet BudgetGoal" uuid="43ed561e-e912-4538-969e-39fd98b2d9f7">
+						<datasetParameter name="id_dependency">
+							<datasetParameterExpression><![CDATA[$F{id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="1dd1037a-54a2-4eff-97bd-90d56f6b2766">
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="7a5f4aae-4b4c-44b8-ac46-d6a2c352a0e4" x="0" y="0" width="90" height="20"/>
+								<textElement verticalAlignment="Middle">
+									<font isBold="true"/>
+									<paragraph leftIndent="5"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="711" uuid="d3c911b4-a651-4e9e-b6f4-26f46aca21b7">
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="22798555-e977-4d7d-b33b-7ae551f69e0c" x="0" y="0" width="711" height="20"/>
+								<textElement verticalAlignment="Middle">
+									<paragraph leftIndent="5"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement uuid="738f1f17-ac35-484c-ade3-a2d72fe2d043" mode="Opaque" x="0" y="76" width="802" height="20" forecolor="#FFFFFF" backcolor="#222222"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Metas presupuestales]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement uuid="3f2323b2-18f2-48cc-929b-42d8e248b2a9" x="720" y="0" width="82" height="23"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

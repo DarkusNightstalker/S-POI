@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boxneed_functional_programmatic_periodicity_h" columnCount="12" printOrder="Horizontal" pageWidth="373" pageHeight="13" columnWidth="31" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="99dc03e3-b0a0-425f-a071-c44dbf2443d1">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="padd">
+		<box leftPadding="2" rightPadding="2"/>
+	</style>
+	<queryString>
+		<![CDATA[SELECT
+	pi.abbreviation as periodicity_item_name
+FROM
+	public.periodicity_item pi
+WHERE
+	pi.id_periodicity = 2;]]>
+	</queryString>
+	<field name="periodicity_item_name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="13">
+			<textField>
+				<reportElement style="padd" mode="Opaque" x="0" y="0" width="31" height="13" forecolor="#FFFFFF" backcolor="#999999" uuid="ad5fbafb-7604-4621-9dc8-e5460bd86667"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periodicity_item_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

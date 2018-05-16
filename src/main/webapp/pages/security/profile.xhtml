@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <script src="#{request.contextPath}/js/pages/profile.js"/>
+    <!-- RIBBON -->
+    <div id="ribbon">
+        <span class="ribbon-button-alignment"> 
+            <span 
+                id="refresh"
+                class="btn btn-ribbon" 
+                data-action="resetWidgets" 
+                data-title="refresh"  
+                rel="tooltip" 
+                data-placement="bottom" 
+                data-html="true">
+                <i class="fa fa-refresh"></i>
+            </span> 
+        </span>
+
+        <ol class="breadcrumb">
+            <li>Inicio</li><li>Seguridad</li><li>Mi Perfil</li>
+        </ol>
+
+    </div>
+    <!-- END RIBBON -->
+    <div id="content">
+        <h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Cargando...</h1>
+        <div id="body-content" class="hidden">
+
+            <div class="row">
+
+                <!-- col -->
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                    <h1 class="page-title txt-color-blueDark">
+
+                        <!-- PAGE HEADER -->
+                        <i class="fa-fw fa fa-home"></i> 
+                        Seguridad
+                        <span>&gt;  
+                            Mi Perfil
+                        </span>
+                    </h1>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 text-align-right">
+                    <div style="margin-top: 12px">
+                        <div class="btn-group">
+                            <a href="javascript:refreshPassword()" class="btn btn-sm btn-warning"> <i class="fa fa-refresh"></i> Cambiar clave</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <div class="col-sm-4">
+
+                    </div>
+                    <article class="col-sm-8 sortable-grid ui-sortable">
+                        <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-info txt-color-white"></i> 
+                                </span>
+                                <h2>Datos personales</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                            <div role="content">
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Nombre de Usuario</label>
+                                            <div class="col-md-9"> 
+                                                <p class="form-control-static text-muted">#{sessionBean.currentUser.username}</p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Dependencia</label>
+                                            <div class="col-md-9"> 
+                                                <p class="form-control-static text-muted">#{sessionBean.currentDependency eq null ? 'NINGUNO' : sessionBean.currentDependency.name}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="row">
+                    <article class="col-sm-4 sortable-grid ui-sortable">
+                        <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-user txt-color-white"></i> 
+                                </span>
+                                <h2>Datos Personales</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                            <div role="content">
+                                <div class="widget-body">
+                                    <div class="form-horizontal">
+                                        <ui:fragment rendered="#{sessionBean.currentDependency ne null}">
+
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">DNI</label>
+                                                <div class="col-md-9"> 
+                                                    <p class="form-control-static text-muted">#{sessionBean.currentUser.involved.person.dni}</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Nombre</label>
+                                                <div class="col-md-9"> 
+                                                    <p class="form-control-static text-muted">#{sessionBean.currentUser.involved.person.name}</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Apellidos</label>
+                                                <div class="col-md-9"> 
+                                                    <p class="form-control-static text-muted">#{sessionBean.currentUser.involved.person.pattern} #{sessionBean.currentUser.involved.person.mattern}</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">E-mail</label>
+                                                <div class="col-md-9"> 
+                                                    <p class="form-control-static text-muted">#{sessionBean.currentUser.involved.person.email}</p>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="col-sm-8 sortable-grid ui-sortable">
+                        <div class="jarviswidget jarviswidget-color-blueDark" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" role="widget">
+                            <header role="heading">
+                                <span class="widget-icon"> 
+                                    <i class="fa fa-tags txt-color-white"></i> 
+                                </span>
+                                <h2>Permisos</h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                            <div role="content">
+                                <div class="widget-body">
+
+                                    <div class="form-horizontal">
+                                        <table id="inbox-table" class="table table-hover table-striped table-forum">
+                                            <tbody>
+                                                <ui:repeat value="#{profileBean.permissionCategories}" var="category" varStatus="st">
+                                                    <tr>
+                                                        <td class="text-center" style="width: 40px;"><i class="fa #{category.icon} fa-2x text-muted"></i></td>
+                                                        <td >
+                                                            <h4>
+                                                                <a href="javascript:void(0)">
+                                                                    #{category.name}
+                                                                </a>
+                                                                <small>#{category.summary}</small>
+                                                            </h4>
+                                                        </td>
+                                                    </tr>
+                                                    <ui:repeat value="#{profileBean.permissions[category.id]}" var="item">
+                                                        <tr>
+                                                            <td class="text-center" style="width: 40px;"></td>
+                                                            <td >#{item.name}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </ui:repeat>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-change" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-download"/> Cambiar contraseña</h4>
+                </div>
+                <div class="modal-body">
+                    <h:form id="form-password" styleClass="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Clave actual</label>
+                            <div class="col-md-9">
+                                <h:inputSecret class="form-control" value="#{profileBean.currentPassword}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Clave nueva</label>
+                            <div class="col-md-9">
+                                <h:inputSecret class="form-control" value="#{profileBean.password}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Repetir clave nueva</label>
+                            <div class="col-md-9">
+                                <h:inputSecret class="form-control" value="#{profileBean.repeatPassword}"/>
+                            </div>
+                        </div>
+                        <p:remoteCommand name="submitPassword" process="@form" oncomplete="$('#modal-change .close').trigger('click')" action="#{profileBean.changePsssword()}"/>
+                        <p:remoteCommand name="refreshPassword" process="@form" update=":form-password" oncomplete="$('#modal-change').modal()" action="#{profileBean.refreshPassword()}"/>
+                    </h:form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-warning" onclick="submitPassword()">Cambiar</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</ui:composition>
